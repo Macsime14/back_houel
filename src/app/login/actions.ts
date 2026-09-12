@@ -8,6 +8,7 @@ export async function loginAction(_prevState: string | undefined, formData: Form
     await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
+      rememberMe: formData.get("rememberMe") === "on" ? "true" : "false",
       redirectTo: "/dashboard",
     });
   } catch (error) {

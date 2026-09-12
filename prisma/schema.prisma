@@ -47,6 +47,21 @@ model User {
 
   devis   Devis[]
   factures Facture[]
+  resetTokens PasswordResetToken[]
+}
+
+// Jeton de réinitialisation de mot de passe. Seul le hash du jeton est
+// stocké (jamais le jeton en clair, envoyé une seule fois par email) ;
+// on le compare au hash du jeton reçu dans le lien de réinitialisation.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
 }
 
 // Un devis regroupe des prestations chiffrées envoyées à un client.

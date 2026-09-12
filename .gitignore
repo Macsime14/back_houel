@@ -45,3 +45,6 @@ next-env.d.ts
 
 # bruno collection : identifiants reels non versionnes (voir bruno/README.md)
 bruno/back-houel/environments/Local.bru
+
+# etat local d'outils (Claude Code, etc.), pas du code projet
+.claude/
