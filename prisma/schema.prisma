@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  EMPLOYEE
+}
+
+enum DevisStatus {
+  BROUILLON
+  ENVOYE
+  ACCEPTE
+  REFUSE
+}
+
+enum FactureStatus {
+  BROUILLON
+  EMISE
+  PAYEE
+  ANNULEE
+}
+
+enum InterventionStatus {
+  PLANIFIEE
+  CONFIRMEE
+  TERMINEE
+  ANNULEE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(EMPLOYEE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  devis   Devis[]
+  factures Facture[]
+}
+
+// Un devis regroupe des prestations chiffrées envoyées à un client.
+// Le devis reste modifiable tant qu'il n'a pas été transformé en facture.
+model Devis {
+  id          String      @id @default(cuid())
+  numero      Int         @unique @default(autoincrement())
+  status      DevisStatus @default(BROUILLON)
+
+  clientNom     String
+  clientEmail   String?
+  clientTelephone String?
+  clientAdresse String?
+
+  lignes      LigneDevis[]
+  totalHT     Decimal      @default(0) @db.Decimal(10, 2)
+  totalTTC    Decimal      @default(0) @db.Decimal(10, 2)
+
+  notes       String?
+  envoyeAt    DateTime?
+  repondtAt   DateTime?
+
+  facture     Facture?
+  interventions Intervention[]
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LigneDevis {
+  id          String  @id @default(cuid())
+  devis       Devis   @relation(fields: [devisId], references: [id], onDelete: Cascade)
+  devisId     String
+
+  description String
+  quantite    Decimal @db.Decimal(10, 2)
+  prixUnitaireHT Decimal @db.Decimal(10, 2)
+  tauxTVA     Decimal @default(20) @db.Decimal(4, 2)
+
+  ordre       Int     @default(0)
+}
+
+// Une facture est émise à partir d'un devis accepté.
+// Contrainte légale (France) : numérotation séquentielle sans trou et
+// immuabilité une fois émise -> le champ `verrouillee` bloque toute
+// modification des lignes/montants après émission ; seule une facture
+// d'avoir (à modéliser plus tard) peut corriger une facture émise.
+//
+// `numero` reste NULL tant que la facture est en brouillon : le numéro
+// légal n'est attribué qu'au moment de l'émission (voir FactureCounter),
+// pas à la création, pour éviter tout trou dans la séquence si un brouillon
+// est abandonné.
+model Facture {
+  id          String        @id @default(cuid())
+  numero      Int?          @unique
+  status      FactureStatus @default(BROUILLON)
+  verrouillee Boolean       @default(false)
+
+  devis       Devis   @relation(fields: [devisId], references: [id])
+  devisId     String  @unique
+
+  clientNom     String
+  clientEmail   String?
+  clientAdresse String?
+
+  // Mentions légales à figer au moment de l'émission (dépendent du statut
+  // juridique d'Antoine, encore à définir avec lui).
+  mentionsLegales String?
+
+  lignes      LigneFacture[]
+  totalHT     Decimal @default(0) @db.Decimal(10, 2)
+  totalTTC    Decimal @default(0) @db.Decimal(10, 2)
+
+  emiseAt     DateTime?
+  payeeAt     DateTime?
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LigneFacture {
+  id          String  @id @default(cuid())
+  facture     Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  factureId   String
+
+  description String
+  quantite    Decimal @db.Decimal(10, 2)
+  prixUnitaireHT Decimal @db.Decimal(10, 2)
+  tauxTVA     Decimal @default(20) @db.Decimal(4, 2)
+
+  ordre       Int     @default(0)
+}
+
+// Ligne unique (id fixe = 1) servant de compteur transactionnel pour la
+// numérotation légale des factures. Le service d'émission doit verrouiller
+// cette ligne (SELECT ... FOR UPDATE via une transaction Prisma), incrémenter
+// `dernierNumero`, puis assigner la nouvelle valeur à Facture.numero dans la
+// même transaction, pour garantir une séquence strictement croissante sans trou.
+model FactureCounter {
+  id            Int @id @default(1)
+  dernierNumero Int @default(0)
+}
+
+// Créneau de planning lié à un devis (avant facturation) ou existant seul
+// (rendez-vous non encore chiffré).
+model Intervention {
+  id          String              @id @default(cuid())
+  titre       String
+  status      InterventionStatus  @default(PLANIFIEE)
+
+  debut       DateTime
+  fin         DateTime
+
+  devis       Devis?  @relation(fields: [devisId], references: [id])
+  devisId     String?
+
+  notes       String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
