@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { CircleCheck, CreditCard, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -70,7 +71,13 @@ export function FactureActions({ factureId, status }: FactureActionsProps) {
     return (
       <div className="flex items-center gap-2">
         <AlertDialog>
-          <AlertDialogTrigger render={<Button size="sm" disabled={isPending}>Émettre la facture</Button>} />
+          <AlertDialogTrigger
+            render={
+              <Button size="sm" disabled={isPending}>
+                <CircleCheck /> Émettre la facture
+              </Button>
+            }
+          />
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Émettre cette facture ?</AlertDialogTitle>
@@ -102,7 +109,7 @@ export function FactureActions({ factureId, status }: FactureActionsProps) {
           <AlertDialogTrigger
             render={
               <Button size="sm" variant="destructive" disabled={isPending}>
-                Supprimer
+                <Trash2 /> Supprimer
               </Button>
             }
           />
@@ -124,7 +131,7 @@ export function FactureActions({ factureId, status }: FactureActionsProps) {
   if (status === "EMISE") {
     return (
       <Button size="sm" disabled={isPending} onClick={handleMarquerPayee}>
-        Marquer comme payée
+        <CreditCard /> Marquer comme payée
       </Button>
     );
   }
