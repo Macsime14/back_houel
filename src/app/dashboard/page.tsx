@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Receipt, CalendarClock, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { listDevis } from "@/services/devis.service";
 import { listFactures } from "@/services/facture.service";
 import { listInterventions } from "@/services/intervention.service";
@@ -25,16 +25,16 @@ export default async function DashboardHomePage() {
   ).length;
 
   const stats = [
-    { label: "Devis en attente de réponse", value: devisEnAttente, icon: FileText, href: "/dashboard/devis" },
-    { label: "Facture(s) émise(s) non payée(s)", value: facturesImpayees, icon: Receipt, href: "/dashboard/factures" },
-    { label: "Intervention(s) à venir", value: interventionsAVenir, icon: CalendarClock, href: "/dashboard/interventions" },
+    { label: "Devis en attente de réponse", value: devisEnAttente, href: "/dashboard/devis" },
+    { label: "Facture(s) émise(s) non payée(s)", value: facturesImpayees, href: "/dashboard/factures" },
+    { label: "Intervention(s) à venir", value: interventionsAVenir, href: "/dashboard/interventions" },
   ];
 
   const devisRecents = devis.slice(0, 3);
   const facturesRecentes = factures.slice(0, 3);
 
   return (
-    <div className="space-y-8 py-8">
+    <div className="space-y-8">
       <div>
         <h1 className="font-heading text-2xl font-semibold text-foreground">Tableau de bord</h1>
         <p className="text-sm text-muted-foreground">Vue d&apos;ensemble de l&apos;activité</p>
@@ -43,14 +43,11 @@ export default async function DashboardHomePage() {
       <div className="grid gap-4 sm:grid-cols-3">
         {stats.map((stat) => (
           <Link key={stat.label} href={stat.href}>
-            <div className="flex items-start justify-between rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40">
-              <div>
-                <span className="block font-mono text-2xl font-semibold text-primary">
-                  {stat.value}
-                </span>
-                <span className="text-xs text-muted-foreground">{stat.label}</span>
-              </div>
-              <stat.icon className="size-4 text-muted-foreground" />
+            <div className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40">
+              <span className="block font-mono text-2xl font-semibold text-primary">
+                {stat.value}
+              </span>
+              <span className="text-xs text-muted-foreground">{stat.label}</span>
             </div>
           </Link>
         ))}

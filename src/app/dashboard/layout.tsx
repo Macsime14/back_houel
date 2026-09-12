@@ -9,10 +9,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <SidebarProvider>
       <AppSidebar userEmail={session?.user?.email ?? ""} />
       <SidebarInset>
-        <div className="flex h-12 shrink-0 items-center px-4">
+        <div className="flex h-14 shrink-0 items-center border-b border-border px-4 sm:px-8">
           <SidebarTrigger />
         </div>
-        <main className="flex-1 px-4 pb-12 sm:px-8">
+        <main className="flex-1 px-4 py-8 sm:px-8">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </SidebarInset>
