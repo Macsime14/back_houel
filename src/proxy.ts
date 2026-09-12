@@ -7,17 +7,30 @@ import { authConfig } from "@/lib/auth.config";
 // ni bcrypt. Ne remplace pas src/lib/auth.ts, utilisé côté route handlers.
 const { auth } = NextAuth(authConfig);
 
-// Protège toutes les routes métier de l'API : seules /api/auth/* (login) et
-// /api/health restent publiques.
+// Protège les routes API (401 JSON) et les pages du dashboard (redirect vers
+// /login). Seules /api/auth/*, /api/health et /login restent publiques.
 export default auth((req) => {
   const { pathname } = req.nextUrl;
-  const isPublic = pathname.startsWith("/api/auth") || pathname === "/api/health";
 
-  if (!isPublic && !req.auth) {
-    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  if (pathname.startsWith("/api")) {
+    const isPublicApi = pathname.startsWith("/api/auth") || pathname === "/api/health";
+    if (!isPublicApi && !req.auth) {
+      return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    }
+    return;
+  }
+
+  if (pathname.startsWith("/dashboard") && !req.auth) {
+    const loginUrl = new URL("/login", req.nextUrl.origin);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (pathname === "/login" && req.auth) {
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
   }
 });
 
 export const config = {
-  matcher: ["/api/:path*"],
+  matcher: ["/api/:path*", "/dashboard/:path*", "/login"],
 };
