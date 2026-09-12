@@ -10,7 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InterventionStatusBadge } from "./status-badge";
+import { CalendarView } from "./calendar-view";
 
 function formatPeriode(debut: Date, fin: Date) {
   const jour = debut.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -34,57 +36,70 @@ export default async function PlanningPage() {
         </Link>
       </div>
 
-      <div className="rounded-md border border-border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Titre</TableHead>
-              <TableHead>Date / horaire</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Devis lié</TableHead>
-              <TableHead className="sr-only">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {interventions.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                  Aucune intervention planifiée pour l&apos;instant.
-                </TableCell>
-              </TableRow>
-            )}
-            {interventions.map((intervention) => (
-              <TableRow key={intervention.id}>
-                <TableCell>{intervention.titre}</TableCell>
-                <TableCell>{formatPeriode(intervention.debut, intervention.fin)}</TableCell>
-                <TableCell>
-                  <InterventionStatusBadge status={intervention.status} />
-                </TableCell>
-                <TableCell>
-                  {intervention.devis ? (
-                    <Link
-                      href={`/dashboard/devis/${intervention.devis.id}`}
-                      className="text-primary hover:underline"
-                    >
-                      Devis n°{intervention.devis.numero}
-                    </Link>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Link
-                    href={`/dashboard/interventions/${intervention.id}`}
-                    className="text-sm text-primary hover:underline"
-                  >
-                    Voir
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <Tabs defaultValue="calendrier">
+        <TabsList>
+          <TabsTrigger value="calendrier">Calendrier</TabsTrigger>
+          <TabsTrigger value="liste">Liste</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="calendrier" className="mt-4">
+          <CalendarView interventions={interventions} />
+        </TabsContent>
+
+        <TabsContent value="liste" className="mt-4">
+          <div className="rounded-md border border-border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Titre</TableHead>
+                  <TableHead>Date / horaire</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Devis lié</TableHead>
+                  <TableHead className="sr-only">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {interventions.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                      Aucune intervention planifiée pour l&apos;instant.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {interventions.map((intervention) => (
+                  <TableRow key={intervention.id}>
+                    <TableCell>{intervention.titre}</TableCell>
+                    <TableCell>{formatPeriode(intervention.debut, intervention.fin)}</TableCell>
+                    <TableCell>
+                      <InterventionStatusBadge status={intervention.status} />
+                    </TableCell>
+                    <TableCell>
+                      {intervention.devis ? (
+                        <Link
+                          href={`/dashboard/devis/${intervention.devis.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          Devis n°{intervention.devis.numero}
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        href={`/dashboard/interventions/${intervention.id}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Voir
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { DateTimeField } from "@/components/ui/datetime-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -96,23 +97,11 @@ export function InterventionForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="debut">Début *</Label>
-          <Input
-            id="debut"
-            type="datetime-local"
-            value={debut}
-            onChange={(e) => setDebut(e.target.value)}
-            required
-          />
+          <DateTimeField id="debut" value={debut} onChange={setDebut} required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="fin">Fin *</Label>
-          <Input
-            id="fin"
-            type="datetime-local"
-            value={fin}
-            onChange={(e) => setFin(e.target.value)}
-            required
-          />
+          <DateTimeField id="fin" value={fin} onChange={setFin} required />
         </div>
       </div>
 
