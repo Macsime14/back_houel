@@ -1,0 +1,15 @@
+meta {
+  name: 6 - Delete Facture
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/factures/{{factureId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Echoue avec 400 si la facture a deja ete emise (verrouillee) : normal.
+}

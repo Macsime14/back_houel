@@ -1,0 +1,39 @@
+meta {
+  name: 2 - Create Devis
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/devis
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "clientNom": "Jean Dupont",
+    "clientEmail": "jean.dupont@example.com",
+    "clientTelephone": "0612345678",
+    "clientAdresse": "12 rue des Lilas, 14000 Caen",
+    "notes": "Devis de test cree via Bruno",
+    "lignes": [
+      {
+        "description": "Remplacement chauffe-eau",
+        "quantite": 1,
+        "prixUnitaireHT": 450,
+        "tauxTVA": 20
+      },
+      {
+        "description": "Main d'oeuvre",
+        "quantite": 3,
+        "prixUnitaireHT": 60,
+        "tauxTVA": 20
+      }
+    ]
+  }
+}
+
+script:post-response {
+  bru.setVar("devisId", res.body.id);
+}

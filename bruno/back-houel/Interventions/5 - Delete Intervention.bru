@@ -1,0 +1,11 @@
+meta {
+  name: 5 - Delete Intervention
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/interventions/{{interventionId}}
+  body: none
+  auth: none
+}

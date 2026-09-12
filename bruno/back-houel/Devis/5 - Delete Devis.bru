@@ -1,0 +1,16 @@
+meta {
+  name: 5 - Delete Devis
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/devis/{{devisId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Echouera avec 400 si une facture a deja ete creee pour ce devis
+  (voir dossier Factures) : c'est le comportement attendu.
+}

@@ -1,0 +1,17 @@
+meta {
+  name: 4 - Update Devis (accepter)
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/devis/{{devisId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "status": "ACCEPTE"
+  }
+}

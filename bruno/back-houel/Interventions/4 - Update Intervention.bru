@@ -1,0 +1,17 @@
+meta {
+  name: 4 - Update Intervention
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/interventions/{{interventionId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "status": "CONFIRMEE"
+  }
+}

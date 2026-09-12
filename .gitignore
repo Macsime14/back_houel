@@ -42,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# bruno collection : identifiants reels non versionnes (voir bruno/README.md)
+bruno/back-houel/environments/Local.bru

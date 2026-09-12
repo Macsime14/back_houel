@@ -1,0 +1,15 @@
+meta {
+  name: 1 - Get CSRF Token
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/auth/csrf
+  body: none
+  auth: none
+}
+
+script:post-response {
+  bru.setVar("csrfToken", res.body.csrfToken);
+}

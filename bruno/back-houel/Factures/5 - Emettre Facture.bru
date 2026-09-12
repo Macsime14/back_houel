@@ -1,0 +1,22 @@
+meta {
+  name: 5 - Emettre Facture (irreversible)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/factures/{{factureId}}/emettre
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "mentionsLegales": "SIRET 000 000 000 00000 - TVA non applicable, art. 293 B du CGI"
+  }
+}
+
+docs {
+  Action irreversible : attribue le numero de facture legal et verrouille
+  definitivement la facture. A tester en dernier sur une facture de test.
+}

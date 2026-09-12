@@ -1,0 +1,28 @@
+meta {
+  name: 4 - Update Facture Brouillon
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/factures/{{factureId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "lignes": [
+      {
+        "description": "Remplacement chauffe-eau (ajuste)",
+        "quantite": 1,
+        "prixUnitaireHT": 480,
+        "tauxTVA": 20
+      }
+    ]
+  }
+}
+
+docs {
+  Echoue avec 400 si la facture a deja ete emise (verrouillee).
+}

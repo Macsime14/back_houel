@@ -1,0 +1,25 @@
+meta {
+  name: 2 - Create Intervention
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/interventions
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "titre": "Installation chauffe-eau - Jean Dupont",
+    "debut": "2026-09-20T09:00:00.000Z",
+    "fin": "2026-09-20T12:00:00.000Z",
+    "devisId": "{{devisId}}",
+    "notes": "Prevoir acces au garage"
+  }
+}
+
+script:post-response {
+  bru.setVar("interventionId", res.body.id);
+}

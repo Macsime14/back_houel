@@ -1,0 +1,26 @@
+meta {
+  name: 2 - Create Facture from Devis
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/factures
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "devisId": "{{devisId}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("factureId", res.body.id);
+}
+
+docs {
+  Necessite que le devis {{devisId}} soit au statut ACCEPTE
+  (voir Devis > 4 - Update Devis (accepter)).
+}
