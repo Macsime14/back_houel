@@ -27,7 +27,7 @@ export default async function InterventionDetailPage({ params }: Params) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold text-foreground">{intervention.titre}</h1>
+          <h1 className="font-heading text-2xl font-semibold text-foreground">{intervention.titre}</h1>
           <InterventionStatusBadge status={intervention.status} />
         </div>
         <InterventionActions interventionId={intervention.id} status={intervention.status} />

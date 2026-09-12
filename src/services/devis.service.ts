@@ -8,7 +8,7 @@ type UpdateDevisInput = z.infer<typeof updateDevisSchema>;
 
 export function listDevis() {
   return prisma.devis.findMany({
-    include: { lignes: true },
+    include: { lignes: true, facture: true },
     orderBy: { createdAt: "desc" },
   });
 }

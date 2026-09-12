@@ -16,7 +16,7 @@ export default async function FacturesListPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Factures</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground">Factures</h1>
         <p className="text-sm text-muted-foreground">{factures.length} facture(s)</p>
       </div>
 

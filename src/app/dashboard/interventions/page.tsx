@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { listInterventions } from "@/services/intervention.service";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -25,11 +26,11 @@ export default async function PlanningPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Planning</h1>
+          <h1 className="font-heading text-2xl font-semibold text-foreground">Planning</h1>
           <p className="text-sm text-muted-foreground">{interventions.length} intervention(s)</p>
         </div>
         <Link href="/dashboard/interventions/nouveau" className={buttonVariants()}>
-          + Nouvelle intervention
+          <Plus /> Nouvelle intervention
         </Link>
       </div>
 

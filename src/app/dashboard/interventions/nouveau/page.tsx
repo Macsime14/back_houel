@@ -10,7 +10,7 @@ export default async function NouvelleInterventionPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-foreground">Nouvelle intervention</h1>
+      <h1 className="font-heading text-2xl font-semibold text-foreground">Nouvelle intervention</h1>
       <Card>
         <CardContent className="pt-6">
           <InterventionForm mode="create" devisOptions={devisOptions} />
