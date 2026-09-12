@@ -19,6 +19,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
             >
               Devis
             </Link>
+            <Link
+              href="/dashboard/factures"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Factures
+            </Link>
           </nav>
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-muted-foreground sm:inline">

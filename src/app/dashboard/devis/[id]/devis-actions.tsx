@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { DevisStatus } from "@/generated/prisma/client";
 import { deleteDevisAction, updateDevisAction } from "../actions";
+import { createFactureFromDevisAction } from "../../factures/actions";
 
 type DevisActionsProps = {
   devisId: string;
@@ -52,8 +53,25 @@ export function DevisActions({ devisId, status, hasFacture }: DevisActionsProps)
     });
   }
 
+  function handleTransformerEnFacture() {
+    startTransition(async () => {
+      const result = await createFactureFromDevisAction(devisId);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Facture créée");
+      router.push(`/dashboard/factures/${result.data.id}`);
+    });
+  }
+
   return (
     <div className="flex items-center gap-2">
+      {!hasFacture && status === "ACCEPTE" && (
+        <Button size="sm" disabled={isPending} onClick={handleTransformerEnFacture}>
+          Transformer en facture
+        </Button>
+      )}
       {!hasFacture && status === "BROUILLON" && (
         <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("ENVOYE")}>
           Marquer comme envoyé

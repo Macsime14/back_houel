@@ -138,3 +138,19 @@ export async function emettreFacture(id: string, mentionsLegales?: string) {
     });
   });
 }
+
+export async function marquerFacturePayee(id: string) {
+  const facture = await prisma.facture.findUnique({ where: { id } });
+  if (!facture) {
+    throw new Error("Facture introuvable");
+  }
+  if (facture.status !== "EMISE") {
+    throw new Error("Seule une facture émise peut être marquée comme payée");
+  }
+
+  return prisma.facture.update({
+    where: { id },
+    data: { status: "PAYEE", payeeAt: new Date() },
+    include: { lignes: true },
+  });
+}
