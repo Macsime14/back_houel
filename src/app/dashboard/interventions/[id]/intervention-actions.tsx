@@ -3,7 +3,6 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, CircleX, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -56,24 +55,24 @@ export function InterventionActions({ interventionId, status }: InterventionActi
     <div className="flex items-center gap-2">
       {status === "PLANIFIEE" && (
         <Button size="sm" disabled={isPending} onClick={() => changeStatus("CONFIRMEE")}>
-          <Check /> Confirmer
+          Confirmer
         </Button>
       )}
       {(status === "PLANIFIEE" || status === "CONFIRMEE") && (
         <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("TERMINEE")}>
-          <Check /> Marquer comme terminée
+          Marquer comme terminée
         </Button>
       )}
       {(status === "PLANIFIEE" || status === "CONFIRMEE") && (
         <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("ANNULEE")}>
-          <CircleX /> Annuler
+          Annuler
         </Button>
       )}
       <AlertDialog>
         <AlertDialogTrigger
           render={
             <Button size="sm" variant="destructive" disabled={isPending}>
-              <Trash2 /> Supprimer
+              Supprimer
             </Button>
           }
         />

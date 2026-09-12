@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { listDevis } from "@/services/devis.service";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -23,7 +22,7 @@ export default async function DevisListPage() {
           <p className="text-sm text-muted-foreground">{devis.length} devis</p>
         </div>
         <Link href="/dashboard/devis/nouveau" className={buttonVariants()}>
-          <Plus /> Nouveau devis
+          + Nouveau devis
         </Link>
       </div>
 

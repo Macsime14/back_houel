@@ -3,7 +3,6 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowRightCircle, Check, Send, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -70,21 +69,21 @@ export function DevisActions({ devisId, status, hasFacture }: DevisActionsProps)
     <div className="flex items-center gap-2">
       {!hasFacture && status === "ACCEPTE" && (
         <Button size="sm" disabled={isPending} onClick={handleTransformerEnFacture}>
-          <ArrowRightCircle /> Transformer en facture
+          Transformer en facture
         </Button>
       )}
       {!hasFacture && status === "BROUILLON" && (
         <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("ENVOYE")}>
-          <Send /> Marquer comme envoyé
+          Marquer comme envoyé
         </Button>
       )}
       {!hasFacture && status === "ENVOYE" && (
         <>
           <Button size="sm" disabled={isPending} onClick={() => changeStatus("ACCEPTE")}>
-            <Check /> Accepter
+            Accepter
           </Button>
           <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("REFUSE")}>
-            <X /> Refuser
+            Refuser
           </Button>
         </>
       )}
@@ -93,7 +92,7 @@ export function DevisActions({ devisId, status, hasFacture }: DevisActionsProps)
           <AlertDialogTrigger
             render={
               <Button size="sm" variant="destructive" disabled={isPending}>
-                <Trash2 /> Supprimer
+                Supprimer
               </Button>
             }
           />

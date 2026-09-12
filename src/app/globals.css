@@ -118,40 +118,38 @@ a {
   --sidebar-ring: #14b8a6;
 }
 
-/* Palette du dashboard (espace admin) : sombre + accent ambre, distincte
-   de l'identite du site vitrine puisqu'il s'agit d'un outil interne. */
 .dark {
-  --background: #0b0c10;
-  --foreground: #f2f2f0;
-  --card: #16171d;
-  --card-foreground: #f2f2f0;
-  --popover: #16171d;
-  --popover-foreground: #f2f2f0;
-  --primary: #eab308;
-  --primary-foreground: #17130a;
-  --secondary: #1c1d24;
-  --secondary-foreground: #f2f2f0;
-  --muted: #1c1d24;
-  --muted-foreground: #9497a3;
-  --accent: #23242c;
-  --accent-foreground: #f2f2f0;
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+  --primary: #14b8a6;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #5eead4;
+  --accent-foreground: #0f172a;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #24252d;
-  --input: #24252d;
-  --ring: #eab308;
+  --border: #334155;
+  --input: #334155;
+  --ring: #14b8a6;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #0b0c10;
-  --sidebar-foreground: #cdd0da;
-  --sidebar-primary: #eab308;
-  --sidebar-primary-foreground: #17130a;
-  --sidebar-accent: #1c1d24;
-  --sidebar-accent-foreground: #f2f2f0;
-  --sidebar-border: #1c1d24;
-  --sidebar-ring: #eab308;
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #14b8a6;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #5eead4;
+  --sidebar-border: #334155;
+  --sidebar-ring: #14b8a6;
 }
 
 @layer base {
