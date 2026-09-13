@@ -14,7 +14,7 @@ export function listFactures() {
 export function getFacture(id: string) {
   return prisma.facture.findUnique({
     where: { id },
-    include: { lignes: true, devis: true },
+    include: { lignes: true, devis: true, avoirs: { orderBy: { createdAt: "desc" } } },
   });
 }
 

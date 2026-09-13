@@ -41,6 +41,11 @@ enum ClientType {
   PROFESSIONNEL
 }
 
+enum AvoirStatus {
+  BROUILLON
+  EMISE
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -52,6 +57,7 @@ model User {
 
   devis   Devis[]
   factures Facture[]
+  avoirs  Avoir[]
   resetTokens PasswordResetToken[]
 }
 
@@ -144,7 +150,7 @@ model LigneDevis {
 // Contrainte légale (France) : numérotation séquentielle sans trou et
 // immuabilité une fois émise -> le champ `verrouillee` bloque toute
 // modification des lignes/montants après émission ; seule une facture
-// d'avoir (à modéliser plus tard) peut corriger une facture émise.
+// d'avoir (voir Avoir ci-dessous) peut corriger une facture émise.
 //
 // `numero` reste NULL tant que la facture est en brouillon : le numéro
 // légal n'est attribué qu'au moment de l'émission (voir FactureCounter),
@@ -178,6 +184,8 @@ model Facture {
   payeeAt     DateTime?
   derniereRelanceAt DateTime?
 
+  avoirs      Avoir[]
+
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
 
@@ -204,6 +212,69 @@ model LigneFacture {
 // `dernierNumero`, puis assigner la nouvelle valeur à Facture.numero dans la
 // même transaction, pour garantir une séquence strictement croissante sans trou.
 model FactureCounter {
+  id            Int @id @default(1)
+  dernierNumero Int @default(0)
+}
+
+// Corrige une facture déjà émise (donc immuable) en créditant tout ou partie
+// de son montant : erreur de facturation, geste commercial, annulation après
+// coup... Une même facture peut avoir plusieurs avoirs (avoirs partiels
+// successifs). C'est un document légal à part entière, avec sa propre
+// numérotation séquentielle sans trou (voir AvoirCounter) et la même
+// immuabilité qu'une facture une fois émis (voir migration des triggers) ;
+// contrairement à la facture, aucune correction n'existe pour un avoir déjà
+// émis, il n'y a donc aucune transition de statut autorisée après émission.
+model Avoir {
+  id          String      @id @default(cuid())
+  numero      Int?        @unique
+  status      AvoirStatus @default(BROUILLON)
+  verrouillee Boolean     @default(false)
+
+  facture     Facture @relation(fields: [factureId], references: [id])
+  factureId   String
+
+  // Raison de l'avoir (erreur de facturation, remise commerciale...),
+  // saisie librement pour la comptabilité et reprise sur le PDF.
+  motif       String?
+
+  // Copie figée des coordonnées de la facture d'origine au moment de
+  // l'avoir, sur le même principe que Facture.clientNom (voir plus haut).
+  clientNom     String
+  clientEmail   String?
+  clientAdresse String?
+
+  mentionsLegales String?
+
+  lignes      LigneAvoir[]
+  totalHT     Decimal @default(0) @db.Decimal(10, 2)
+  totalTTC    Decimal @default(0) @db.Decimal(10, 2)
+
+  emiseAt     DateTime?
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LigneAvoir {
+  id          String  @id @default(cuid())
+  avoir       Avoir   @relation(fields: [avoirId], references: [id], onDelete: Cascade)
+  avoirId     String
+
+  description String
+  quantite    Decimal @db.Decimal(10, 2)
+  prixUnitaireHT Decimal @db.Decimal(10, 2)
+  tauxTVA     Decimal @default(20) @db.Decimal(4, 2)
+
+  ordre       Int     @default(0)
+}
+
+// Même principe que FactureCounter, pour la numérotation légale des avoirs
+// (série distincte de celle des factures : chaque type de document a sa
+// propre séquence chronologique sans trou).
+model AvoirCounter {
   id            Int @id @default(1)
   dernierNumero Int @default(0)
 }

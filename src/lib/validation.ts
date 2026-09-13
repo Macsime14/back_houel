@@ -60,6 +60,17 @@ export const updateInterventionSchema = createInterventionSchema.partial().exten
   status: z.enum(["PLANIFIEE", "CONFIRMEE", "TERMINEE", "ANNULEE"]).optional(),
 });
 
+export const createAvoirSchema = z.object({
+  factureId: z.string().min(1),
+  motif: z.string().optional(),
+  lignes: z.array(ligneSchema).min(1),
+});
+
+export const updateAvoirSchema = z.object({
+  motif: z.string().optional(),
+  lignes: z.array(ligneSchema).min(1).optional(),
+});
+
 export const createPrestationSchema = z.object({
   designation: z.string().min(1),
   prixUnitaireHT: z.coerce.number().nonnegative(),

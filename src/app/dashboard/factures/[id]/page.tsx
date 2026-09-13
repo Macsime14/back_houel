@@ -10,8 +10,17 @@ import { buttonVariants } from "@/components/ui/button";
 import { InfoField, InfoGrid } from "@/components/info-grid";
 import { LigneTotals } from "@/components/ligne-totals";
 import { LignesReadOnlyTable } from "@/components/lignes-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { FactureStatusBadge } from "../status-badge";
 import { FactureLignesForm } from "../facture-lignes-form";
+import { AvoirStatusBadge } from "../../avoirs/status-badge";
 import { FactureActions } from "./facture-actions";
 
 type Params = { params: Promise<{ id: string }> };
@@ -150,6 +159,49 @@ export default async function FactureDetailPage({ params }: Params) {
           )}
         </CardContent>
       </Card>
+
+      {facture.avoirs.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-foreground">Avoirs</h2>
+          <div className="rounded-md border border-border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>N°</TableHead>
+                  <TableHead>Motif</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Total TTC</TableHead>
+                  <TableHead className="sr-only">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {facture.avoirs.map((avoir) => (
+                  <TableRow key={avoir.id}>
+                    <TableCell className="font-mono text-xs font-medium text-foreground">
+                      {avoir.numero ?? "Brouillon"}
+                    </TableCell>
+                    <TableCell>{avoir.motif ?? <span className="text-muted-foreground">—</span>}</TableCell>
+                    <TableCell>
+                      <AvoirStatusBadge status={avoir.status} />
+                    </TableCell>
+                    <TableCell className="text-right font-mono tabular-nums">
+                      {Number(avoir.totalTTC).toFixed(2)} €
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        href={`/dashboard/avoirs/${avoir.id}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Voir
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

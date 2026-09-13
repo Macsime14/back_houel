@@ -2,9 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
-import { Bell, CircleCheck, CreditCard, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Bell, CircleCheck, CreditCard, Trash2, Undo2 } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { DateField } from "@/components/ui/date-field";
@@ -167,6 +168,12 @@ export function FactureActions({
   if (status === "EMISE") {
     return (
       <div className="flex items-center gap-2">
+        <Link
+          href={`/dashboard/avoirs/nouveau?factureId=${factureId}`}
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
+          <Undo2 /> Créer un avoir
+        </Link>
         {enRetard && (
           <AlertDialog>
             <AlertDialogTrigger
@@ -195,6 +202,17 @@ export function FactureActions({
           <CreditCard /> Marquer comme payée
         </Button>
       </div>
+    );
+  }
+
+  if (status === "PAYEE") {
+    return (
+      <Link
+        href={`/dashboard/avoirs/nouveau?factureId=${factureId}`}
+        className={buttonVariants({ variant: "outline", size: "sm" })}
+      >
+        <Undo2 /> Créer un avoir
+      </Link>
     );
   }
 

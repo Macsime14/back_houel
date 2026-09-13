@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { listDevis } from "@/services/devis.service";
 import { factureEnRetard, listFactures } from "@/services/facture.service";
+import { listAvoirs } from "@/services/avoir.service";
 import { listInterventions } from "@/services/intervention.service";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -10,9 +11,10 @@ import { FactureStatusBadge } from "./factures/status-badge";
 import { InterventionStatusBadge } from "./interventions/status-badge";
 
 export default async function DashboardHomePage() {
-  const [devis, factures, interventions] = await Promise.all([
+  const [devis, factures, avoirs, interventions] = await Promise.all([
     listDevis(),
     listFactures(),
+    listAvoirs(),
     listInterventions(),
   ]);
 
@@ -21,9 +23,16 @@ export default async function DashboardHomePage() {
   const finSemaine = new Date(now);
   finSemaine.setDate(finSemaine.getDate() + 7);
 
-  const encaisseMois = factures
+  const encaissePayees = factures
     .filter((f) => f.status === "PAYEE" && f.payeeAt && f.payeeAt >= debutMois)
     .reduce((sum, f) => sum + Number(f.totalTTC), 0);
+  // Un avoir émis ce mois-ci réduit le net encaissé, qu'il corrige une
+  // facture payée ce mois-ci ou un mois précédent (c'est le mois de l'avoir
+  // qui compte comptablement, pas celui de la facture d'origine).
+  const avoirsMois = avoirs
+    .filter((a) => a.status === "EMISE" && a.emiseAt && a.emiseAt >= debutMois)
+    .reduce((sum, a) => sum + Number(a.totalTTC), 0);
+  const encaisseMois = encaissePayees - avoirsMois;
 
   const facturesImpayeesListe = factures.filter((f) => f.status === "EMISE");
   const facturesEnRetard = facturesImpayeesListe.filter((f) => factureEnRetard(f)).length;
