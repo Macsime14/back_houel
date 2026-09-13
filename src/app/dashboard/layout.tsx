@@ -3,6 +3,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "./app-sidebar";
 import { Breadcrumb } from "./breadcrumb";
+import { GlobalSearch } from "./global-search";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -15,6 +16,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-5" />
           <Breadcrumb />
+          <div className="ml-auto">
+            <GlobalSearch />
+          </div>
         </div>
         <div className="flex-1 px-4 py-8 sm:px-8">
           <div className="mx-auto max-w-6xl">{children}</div>
