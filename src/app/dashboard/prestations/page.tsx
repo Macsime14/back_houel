@@ -37,6 +37,7 @@ export default async function PrestationsListPage() {
             <TableRow>
               <TableHead>Désignation</TableHead>
               <TableHead className="text-right">Prix unitaire HT</TableHead>
+              <TableHead>Unité</TableHead>
               <TableHead className="text-right">TVA</TableHead>
               <TableHead className="sr-only">Actions</TableHead>
             </TableRow>
@@ -44,7 +45,7 @@ export default async function PrestationsListPage() {
           <TableBody>
             {prestations.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4}>
+                <TableCell colSpan={5}>
                   <EmptyState
                     icon={Wrench}
                     title="Aucune prestation dans le catalogue"
@@ -62,6 +63,7 @@ export default async function PrestationsListPage() {
                 <TableCell className="text-right font-mono tabular-nums">
                   {Number(prestation.prixUnitaireHT).toFixed(2)} €
                 </TableCell>
+                <TableCell className="text-muted-foreground">{prestation.unite}</TableCell>
                 <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
                   {Number(prestation.tauxTVA)}%
                 </TableCell>

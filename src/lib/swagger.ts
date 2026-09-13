@@ -28,6 +28,7 @@ export function getApiDocs() {
             properties: {
               description: { type: "string" },
               quantite: { type: "number" },
+              unite: { type: "string", default: "unité", description: "m², ml, heure, forfait..." },
               prixUnitaireHT: { type: "number" },
               tauxTVA: { type: "number", default: 20 },
             },

@@ -13,6 +13,7 @@ import {
 export type PrestationOption = {
   id: string;
   designation: string;
+  unite: string;
   prixUnitaireHT: number;
   tauxTVA: number;
 };
@@ -45,7 +46,7 @@ export function PrestationPicker({
       <SelectContent>
         {prestations.map((prestation) => (
           <SelectItem key={prestation.id} value={prestation.id}>
-            {prestation.designation} — {prestation.prixUnitaireHT.toFixed(2)} € HT
+            {prestation.designation} — {prestation.prixUnitaireHT.toFixed(2)} € / {prestation.unite}
           </SelectItem>
         ))}
       </SelectContent>

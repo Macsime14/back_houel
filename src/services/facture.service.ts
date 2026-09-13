@@ -51,6 +51,7 @@ export async function createFactureFromDevis(devisId: string, createdById: strin
         create: devis.lignes.map((ligne: (typeof devis.lignes)[number]) => ({
           description: ligne.description,
           quantite: ligne.quantite,
+          unite: ligne.unite,
           prixUnitaireHT: ligne.prixUnitaireHT,
           tauxTVA: ligne.tauxTVA,
           ordre: ligne.ordre,

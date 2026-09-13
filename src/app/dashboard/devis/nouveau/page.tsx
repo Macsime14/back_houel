@@ -17,6 +17,7 @@ export default async function NouveauDevisPage() {
             prestationOptions={prestations.map((p) => ({
               id: p.id,
               designation: p.designation,
+              unite: p.unite,
               prixUnitaireHT: Number(p.prixUnitaireHT),
               tauxTVA: Number(p.tauxTVA),
             }))}

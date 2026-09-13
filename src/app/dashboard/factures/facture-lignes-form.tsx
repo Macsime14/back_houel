@@ -14,6 +14,7 @@ import { updateFactureBrouillonAction } from "./actions";
 type Ligne = {
   description: string;
   quantite: number;
+  unite: string;
   prixUnitaireHT: number;
   tauxTVA: number;
 };
@@ -36,7 +37,10 @@ export function FactureLignesForm({
   }
 
   function addLigne() {
-    setLignes((prev) => [...prev, { description: "", quantite: 1, prixUnitaireHT: 0, tauxTVA: 20 }]);
+    setLignes((prev) => [
+      ...prev,
+      { description: "", quantite: 1, unite: "unité", prixUnitaireHT: 0, tauxTVA: 20 },
+    ]);
   }
 
   function addLigneFromPrestation(prestation: PrestationOption) {
@@ -45,6 +49,7 @@ export function FactureLignesForm({
       {
         description: prestation.designation,
         quantite: 1,
+        unite: prestation.unite,
         prixUnitaireHT: prestation.prixUnitaireHT,
         tauxTVA: prestation.tauxTVA,
       },
@@ -93,7 +98,7 @@ export function FactureLignesForm({
             key={index}
             className="grid grid-cols-12 items-end gap-2 rounded-md border border-border p-3"
           >
-            <div className="col-span-12 space-y-1 sm:col-span-5">
+            <div className="col-span-12 space-y-1 sm:col-span-4">
               <Label className="text-xs text-muted-foreground">Description</Label>
               <Input
                 value={ligne.description}
@@ -101,7 +106,7 @@ export function FactureLignesForm({
                 required
               />
             </div>
-            <div className="col-span-4 space-y-1 sm:col-span-2">
+            <div className="col-span-6 space-y-1 sm:col-span-2">
               <Label className="text-xs text-muted-foreground">Qté</Label>
               <Input
                 type="number"
@@ -112,7 +117,16 @@ export function FactureLignesForm({
                 required
               />
             </div>
-            <div className="col-span-4 space-y-1 sm:col-span-2">
+            <div className="col-span-6 space-y-1 sm:col-span-2">
+              <Label className="text-xs text-muted-foreground">Unité</Label>
+              <Input
+                value={ligne.unite}
+                onChange={(e) => updateLigne(index, { unite: e.target.value })}
+                placeholder="unité, m², ml, h..."
+                required
+              />
+            </div>
+            <div className="col-span-6 space-y-1 sm:col-span-2">
               <Label className="text-xs text-muted-foreground">PU HT</Label>
               <Input
                 type="number"
@@ -123,7 +137,7 @@ export function FactureLignesForm({
                 required
               />
             </div>
-            <div className="col-span-3 space-y-1 sm:col-span-2">
+            <div className="col-span-4 space-y-1 sm:col-span-1">
               <Label className="text-xs text-muted-foreground">TVA %</Label>
               <Input
                 type="number"
@@ -133,7 +147,7 @@ export function FactureLignesForm({
                 onChange={(e) => updateLigne(index, { tauxTVA: Number(e.target.value) })}
               />
             </div>
-            <div className="col-span-1 flex justify-end">
+            <div className="col-span-2 flex justify-end sm:col-span-1">
               <Button
                 type="button"
                 variant="ghost"

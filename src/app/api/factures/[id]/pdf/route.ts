@@ -57,6 +57,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
       lignes: facture.lignes.map((ligne) => ({
         description: ligne.description,
         quantite: Number(ligne.quantite),
+        unite: ligne.unite,
         prixUnitaireHT: Number(ligne.prixUnitaireHT),
         tauxTVA: Number(ligne.tauxTVA),
       })),

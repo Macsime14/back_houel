@@ -85,6 +85,7 @@ export default async function AvoirDetailPage({ params }: Params) {
                   id: ligne.id,
                   description: ligne.description,
                   quantite: Number(ligne.quantite),
+                  unite: ligne.unite,
                   prixUnitaireHT: Number(ligne.prixUnitaireHT),
                   tauxTVA: Number(ligne.tauxTVA),
                 }))}
@@ -100,6 +101,7 @@ export default async function AvoirDetailPage({ params }: Params) {
                 lignes: avoir.lignes.map((ligne) => ({
                   description: ligne.description,
                   quantite: Number(ligne.quantite),
+                  unite: ligne.unite,
                   prixUnitaireHT: Number(ligne.prixUnitaireHT),
                   tauxTVA: Number(ligne.tauxTVA),
                 })),

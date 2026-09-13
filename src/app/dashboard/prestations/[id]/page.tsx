@@ -30,6 +30,7 @@ export default async function PrestationDetailPage({ params }: Params) {
             prestationId={prestation.id}
             initial={{
               designation: prestation.designation,
+              unite: prestation.unite,
               prixUnitaireHT: Number(prestation.prixUnitaireHT),
               tauxTVA: Number(prestation.tauxTVA),
             }}

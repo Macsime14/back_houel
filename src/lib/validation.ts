@@ -3,6 +3,7 @@ import { z } from "zod";
 export const ligneSchema = z.object({
   description: z.string().min(1),
   quantite: z.coerce.number().positive(),
+  unite: z.string().min(1).default("unité"),
   prixUnitaireHT: z.coerce.number().nonnegative(),
   tauxTVA: z.coerce.number().nonnegative().default(20),
 });
@@ -73,6 +74,7 @@ export const updateAvoirSchema = z.object({
 
 export const createPrestationSchema = z.object({
   designation: z.string().min(1),
+  unite: z.string().min(1).default("unité"),
   prixUnitaireHT: z.coerce.number().nonnegative(),
   tauxTVA: z.coerce.number().nonnegative().default(20),
 });

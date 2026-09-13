@@ -82,6 +82,7 @@ export default async function DevisDetailPage({ params }: Params) {
                   id: ligne.id,
                   description: ligne.description,
                   quantite: Number(ligne.quantite),
+                  unite: ligne.unite,
                   prixUnitaireHT: Number(ligne.prixUnitaireHT),
                   tauxTVA: Number(ligne.tauxTVA),
                 }))}
@@ -96,6 +97,7 @@ export default async function DevisDetailPage({ params }: Params) {
               prestationOptions={prestations.map((p) => ({
                 id: p.id,
                 designation: p.designation,
+                unite: p.unite,
                 prixUnitaireHT: Number(p.prixUnitaireHT),
                 tauxTVA: Number(p.tauxTVA),
               }))}
@@ -109,6 +111,7 @@ export default async function DevisDetailPage({ params }: Params) {
                 lignes: devis.lignes.map((ligne) => ({
                   description: ligne.description,
                   quantite: Number(ligne.quantite),
+                  unite: ligne.unite,
                   prixUnitaireHT: Number(ligne.prixUnitaireHT),
                   tauxTVA: Number(ligne.tauxTVA),
                 })),

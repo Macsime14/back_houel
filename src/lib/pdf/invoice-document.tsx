@@ -154,6 +154,7 @@ export type InvoiceDocumentProps = {
   lignes: Array<{
     description: string;
     quantite: number;
+    unite: string;
     prixUnitaireHT: number;
     tauxTVA: number;
   }>;
@@ -230,7 +231,9 @@ export function InvoiceDocument({
           {lignes.map((ligne, index) => (
             <View style={styles.tableRow} key={index}>
               <Text style={styles.colDescription}>{ligne.description}</Text>
-              <Text style={styles.colQte}>{ligne.quantite}</Text>
+              <Text style={styles.colQte}>
+                {ligne.quantite} {ligne.unite}
+              </Text>
               <Text style={styles.colPU}>{formatEuros(ligne.prixUnitaireHT)}</Text>
               <Text style={styles.colTVA}>{ligne.tauxTVA}%</Text>
               <Text style={styles.colTotal}>

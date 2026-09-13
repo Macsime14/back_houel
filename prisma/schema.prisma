@@ -140,6 +140,9 @@ model LigneDevis {
 
   description String
   quantite    Decimal @db.Decimal(10, 2)
+  // Unité de la quantité (m², ml, heure, forfait...) : une prestation n'est
+  // pas toujours vendue à l'unité, le prix unitaire se lit "par unité".
+  unite       String  @default("unité")
   prixUnitaireHT Decimal @db.Decimal(10, 2)
   tauxTVA     Decimal @default(20) @db.Decimal(4, 2)
 
@@ -200,6 +203,7 @@ model LigneFacture {
 
   description String
   quantite    Decimal @db.Decimal(10, 2)
+  unite       String  @default("unité")
   prixUnitaireHT Decimal @db.Decimal(10, 2)
   tauxTVA     Decimal @default(20) @db.Decimal(4, 2)
 
@@ -265,6 +269,7 @@ model LigneAvoir {
 
   description String
   quantite    Decimal @db.Decimal(10, 2)
+  unite       String  @default("unité")
   prixUnitaireHT Decimal @db.Decimal(10, 2)
   tauxTVA     Decimal @default(20) @db.Decimal(4, 2)
 
@@ -312,6 +317,9 @@ model Intervention {
 model Prestation {
   id             String  @id @default(cuid())
   designation    String
+  // Unité de facturation (m², ml, heure, forfait...), reprise sur la ligne
+  // de devis/facture créée depuis cette prestation (voir prestation-picker.tsx).
+  unite          String  @default("unité")
   prixUnitaireHT Decimal @db.Decimal(10, 2)
   tauxTVA        Decimal @default(20) @db.Decimal(4, 2)
 

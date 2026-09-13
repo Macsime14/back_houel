@@ -4,6 +4,7 @@ type Ligne = {
   id: string;
   description: string;
   quantite: number;
+  unite: string;
   prixUnitaireHT: number;
   tauxTVA: number;
 };
@@ -25,7 +26,9 @@ export function LignesReadOnlyTable({ lignes }: { lignes: Ligne[] }) {
           {lignes.map((ligne) => (
             <TableRow key={ligne.id}>
               <TableCell>{ligne.description}</TableCell>
-              <TableCell className="text-right font-mono tabular-nums">{ligne.quantite}</TableCell>
+              <TableCell className="text-right font-mono tabular-nums">
+                {ligne.quantite} {ligne.unite}
+              </TableCell>
               <TableCell className="text-right font-mono tabular-nums">
                 {ligne.prixUnitaireHT.toFixed(2)} €
               </TableCell>

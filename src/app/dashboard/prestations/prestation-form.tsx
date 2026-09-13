@@ -13,6 +13,7 @@ type PrestationFormProps = {
   prestationId?: string;
   initial?: {
     designation: string;
+    unite: string;
     prixUnitaireHT: number;
     tauxTVA: number;
   };
@@ -22,13 +23,14 @@ export function PrestationForm({ mode, prestationId, initial }: PrestationFormPr
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [designation, setDesignation] = useState(initial?.designation ?? "");
+  const [unite, setUnite] = useState(initial?.unite ?? "unité");
   const [prixUnitaireHT, setPrixUnitaireHT] = useState(initial?.prixUnitaireHT ?? 0);
   const [tauxTVA, setTauxTVA] = useState(initial?.tauxTVA ?? 20);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
-    const payload = { designation, prixUnitaireHT, tauxTVA };
+    const payload = { designation, unite, prixUnitaireHT, tauxTVA };
 
     startTransition(async () => {
       if (mode === "create") {
@@ -65,7 +67,7 @@ export function PrestationForm({ mode, prestationId, initial }: PrestationFormPr
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="prixUnitaireHT">Prix unitaire HT *</Label>
           <Input
@@ -75,6 +77,16 @@ export function PrestationForm({ mode, prestationId, initial }: PrestationFormPr
             step="0.01"
             value={prixUnitaireHT}
             onChange={(e) => setPrixUnitaireHT(Number(e.target.value))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="unite">Unité</Label>
+          <Input
+            id="unite"
+            value={unite}
+            onChange={(e) => setUnite(e.target.value)}
+            placeholder="unité, m², ml, h..."
             required
           />
         </div>

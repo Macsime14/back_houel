@@ -9,6 +9,7 @@ type ActionResult<T> = { success: true; data: T } | { success: false; error: str
 export async function createPrestationAction(input: unknown): Promise<ActionResult<{
   id: string;
   designation: string;
+  unite: string;
   prixUnitaireHT: number;
   tauxTVA: number;
 }>> {
@@ -24,6 +25,7 @@ export async function createPrestationAction(input: unknown): Promise<ActionResu
     data: {
       id: prestation.id,
       designation: prestation.designation,
+      unite: prestation.unite,
       prixUnitaireHT: Number(prestation.prixUnitaireHT),
       tauxTVA: Number(prestation.tauxTVA),
     },
