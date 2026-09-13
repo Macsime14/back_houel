@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Download } from "lucide-react";
 import { getDevis } from "@/services/devis.service";
 import { listClients } from "@/services/client.service";
 import { Card, CardContent } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
 import { InfoField, InfoGrid } from "@/components/info-grid";
 import { LigneTotals } from "@/components/ligne-totals";
 import { LignesReadOnlyTable } from "@/components/lignes-table";
@@ -33,7 +35,17 @@ export default async function DevisDetailPage({ params }: Params) {
           <h1 className="font-heading text-2xl font-semibold text-foreground">Devis n°{devis.numero}</h1>
           <DevisStatusBadge status={devis.status} />
         </div>
-        <DevisActions devisId={devis.id} status={devis.status} hasFacture={hasFacture} />
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/devis/${devis.id}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <Download /> PDF
+          </a>
+          <DevisActions devisId={devis.id} status={devis.status} hasFacture={hasFacture} />
+        </div>
       </div>
 
       {devis.client && (

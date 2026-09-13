@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Download } from "lucide-react";
 import { factureEnRetard, getFacture } from "@/services/facture.service";
 import { composerMentionsLegales, getEntreprise } from "@/services/entreprise.service";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { InfoField, InfoGrid } from "@/components/info-grid";
 import { LigneTotals } from "@/components/ligne-totals";
 import { LignesReadOnlyTable } from "@/components/lignes-table";
@@ -48,14 +50,24 @@ export default async function FactureDetailPage({ params }: Params) {
             </Badge>
           )}
         </div>
-        <FactureActions
-          factureId={facture.id}
-          status={facture.status}
-          mentionsLegalesSuggeree={mentionsLegalesSuggeree}
-          dateEcheanceSuggeree={dateEcheanceSuggereeStr}
-          clientEmail={facture.clientEmail}
-          enRetard={enRetard}
-        />
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/factures/${facture.id}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <Download /> PDF
+          </a>
+          <FactureActions
+            factureId={facture.id}
+            status={facture.status}
+            mentionsLegalesSuggeree={mentionsLegalesSuggeree}
+            dateEcheanceSuggeree={dateEcheanceSuggereeStr}
+            clientEmail={facture.clientEmail}
+            enRetard={enRetard}
+          />
+        </div>
       </div>
 
       <Card>
