@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Download } from "lucide-react";
 import { getDevis } from "@/services/devis.service";
 import { listClients } from "@/services/client.service";
+import { listPrestations } from "@/services/prestation.service";
 import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { InfoField, InfoGrid } from "@/components/info-grid";
@@ -16,7 +17,11 @@ type Params = { params: Promise<{ id: string }> };
 
 export default async function DevisDetailPage({ params }: Params) {
   const { id } = await params;
-  const [devis, clients] = await Promise.all([getDevis(id), listClients()]);
+  const [devis, clients, prestations] = await Promise.all([
+    getDevis(id),
+    listClients(),
+    listPrestations(),
+  ]);
 
   if (!devis) {
     notFound();
@@ -88,6 +93,12 @@ export default async function DevisDetailPage({ params }: Params) {
               mode="edit"
               devisId={devis.id}
               clientOptions={clients}
+              prestationOptions={prestations.map((p) => ({
+                id: p.id,
+                designation: p.designation,
+                prixUnitaireHT: Number(p.prixUnitaireHT),
+                tauxTVA: Number(p.tauxTVA),
+              }))}
               initial={{
                 clientId: devis.clientId,
                 clientNom: devis.clientNom,

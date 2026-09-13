@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LigneTotals } from "@/components/ligne-totals";
+import { PrestationPicker, type PrestationOption } from "@/components/prestation-picker";
 import { updateFactureBrouillonAction } from "./actions";
 
 type Ligne = {
@@ -17,7 +18,15 @@ type Ligne = {
   tauxTVA: number;
 };
 
-export function FactureLignesForm({ factureId, initialLignes }: { factureId: string; initialLignes: Ligne[] }) {
+export function FactureLignesForm({
+  factureId,
+  initialLignes,
+  prestationOptions = [],
+}: {
+  factureId: string;
+  initialLignes: Ligne[];
+  prestationOptions?: PrestationOption[];
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [lignes, setLignes] = useState<Ligne[]>(initialLignes);
@@ -28,6 +37,18 @@ export function FactureLignesForm({ factureId, initialLignes }: { factureId: str
 
   function addLigne() {
     setLignes((prev) => [...prev, { description: "", quantite: 1, prixUnitaireHT: 0, tauxTVA: 20 }]);
+  }
+
+  function addLigneFromPrestation(prestation: PrestationOption) {
+    setLignes((prev) => [
+      ...prev,
+      {
+        description: prestation.designation,
+        quantite: 1,
+        prixUnitaireHT: prestation.prixUnitaireHT,
+        tauxTVA: prestation.tauxTVA,
+      },
+    ]);
   }
 
   function removeLigne(index: number) {
@@ -58,9 +79,12 @@ export function FactureLignesForm({ factureId, initialLignes }: { factureId: str
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="flex items-center justify-between">
         <Label>Prestations</Label>
-        <Button type="button" variant="outline" size="sm" onClick={addLigne}>
-          + Ajouter une ligne
-        </Button>
+        <div className="flex items-center gap-2">
+          <PrestationPicker prestations={prestationOptions} onSelect={addLigneFromPrestation} />
+          <Button type="button" variant="outline" size="sm" onClick={addLigne}>
+            + Ajouter une ligne
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-3">

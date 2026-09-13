@@ -60,6 +60,14 @@ export const updateInterventionSchema = createInterventionSchema.partial().exten
   status: z.enum(["PLANIFIEE", "CONFIRMEE", "TERMINEE", "ANNULEE"]).optional(),
 });
 
+export const createPrestationSchema = z.object({
+  designation: z.string().min(1),
+  prixUnitaireHT: z.coerce.number().nonnegative(),
+  tauxTVA: z.coerce.number().nonnegative().default(20),
+});
+
+export const updatePrestationSchema = createPrestationSchema.partial();
+
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Mot de passe actuel requis"),

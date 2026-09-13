@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Download } from "lucide-react";
 import { factureEnRetard, getFacture } from "@/services/facture.service";
 import { composerMentionsLegales, getEntreprise } from "@/services/entreprise.service";
+import { listPrestations } from "@/services/prestation.service";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -17,7 +18,11 @@ type Params = { params: Promise<{ id: string }> };
 
 export default async function FactureDetailPage({ params }: Params) {
   const { id } = await params;
-  const [facture, entreprise] = await Promise.all([getFacture(id), getEntreprise()]);
+  const [facture, entreprise, prestations] = await Promise.all([
+    getFacture(id),
+    getEntreprise(),
+    listPrestations(),
+  ]);
 
   if (!facture) {
     notFound();
@@ -134,6 +139,12 @@ export default async function FactureDetailPage({ params }: Params) {
                 quantite: Number(ligne.quantite),
                 prixUnitaireHT: Number(ligne.prixUnitaireHT),
                 tauxTVA: Number(ligne.tauxTVA),
+              }))}
+              prestationOptions={prestations.map((p) => ({
+                id: p.id,
+                designation: p.designation,
+                prixUnitaireHT: Number(p.prixUnitaireHT),
+                tauxTVA: Number(p.tauxTVA),
               }))}
             />
           )}

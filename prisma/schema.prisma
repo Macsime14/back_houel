@@ -232,6 +232,22 @@ model Intervention {
   updatedAt   DateTime @updatedAt
 }
 
+// Catalogue de prestations types (ex: "Débouchage canalisation"), pour
+// pré-remplir rapidement une ligne de devis/facture avec un prix habituel
+// au lieu de le ressaisir à chaque fois. Purement un gabarit : sélectionner
+// une prestation copie ses valeurs dans une ligne, elle n'est jamais liée
+// aux lignes existantes (modifier ou supprimer une prestation du catalogue
+// ne change donc aucun devis/facture déjà créé).
+model Prestation {
+  id             String  @id @default(cuid())
+  designation    String
+  prixUnitaireHT Decimal @db.Decimal(10, 2)
+  tauxTVA        Decimal @default(20) @db.Decimal(4, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Ligne unique (id fixe = 1) : coordonnées de l'entreprise, saisies une
 // fois par l'utilisateur dans Paramètres. Sert à pré-remplir les mentions
 // légales obligatoires au moment de l'émission d'une facture (voir

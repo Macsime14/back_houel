@@ -23,6 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { LigneTotals } from "@/components/ligne-totals";
+import { PrestationPicker, type PrestationOption } from "@/components/prestation-picker";
 import { ClientForm } from "../clients/client-form";
 import { createDevisAction, updateDevisAction } from "./actions";
 
@@ -52,6 +53,7 @@ type DevisFormProps = {
   mode: "create" | "edit";
   devisId?: string;
   clientOptions?: ClientOption[];
+  prestationOptions?: PrestationOption[];
   initial?: {
     clientId?: string | null;
     clientNom: string;
@@ -66,7 +68,13 @@ type DevisFormProps = {
 const emptyLigne: Ligne = { description: "", quantite: 1, prixUnitaireHT: 0, tauxTVA: 20 };
 const CLIENT_PONCTUEL = "ponctuel";
 
-export function DevisForm({ mode, devisId, clientOptions: initialClientOptions = [], initial }: DevisFormProps) {
+export function DevisForm({
+  mode,
+  devisId,
+  clientOptions: initialClientOptions = [],
+  prestationOptions = [],
+  initial,
+}: DevisFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [clientOptions, setClientOptions] = useState(initialClientOptions);
@@ -112,6 +120,18 @@ export function DevisForm({ mode, devisId, clientOptions: initialClientOptions =
 
   function addLigne() {
     setLignes((prev) => [...prev, { ...emptyLigne }]);
+  }
+
+  function addLigneFromPrestation(prestation: PrestationOption) {
+    setLignes((prev) => [
+      ...prev,
+      {
+        description: prestation.designation,
+        quantite: 1,
+        prixUnitaireHT: prestation.prixUnitaireHT,
+        tauxTVA: prestation.tauxTVA,
+      },
+    ]);
   }
 
   function removeLigne(index: number) {
@@ -251,9 +271,12 @@ export function DevisForm({ mode, devisId, clientOptions: initialClientOptions =
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Label>Prestations *</Label>
-          <Button type="button" variant="outline" size="sm" onClick={addLigne}>
-            + Ajouter une ligne
-          </Button>
+          <div className="flex items-center gap-2">
+            <PrestationPicker prestations={prestationOptions} onSelect={addLigneFromPrestation} />
+            <Button type="button" variant="outline" size="sm" onClick={addLigne}>
+              + Ajouter une ligne
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-3">
