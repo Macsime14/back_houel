@@ -64,6 +64,24 @@ model PasswordResetToken {
   userId    String
 }
 
+// Fiche client centralisée : sert à retrouver l'historique (devis/factures)
+// d'un client et à pré-remplir un nouveau devis. Les devis/factures gardent
+// leur propre copie des coordonnées (voir Devis.clientNom etc.), donc modifier
+// ou supprimer une fiche Client ne change jamais un document déjà émis.
+model Client {
+  id          String   @id @default(cuid())
+  nom         String
+  email       String?
+  telephone   String?
+  adresse     String?
+  notes       String?
+
+  devis       Devis[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // Un devis regroupe des prestations chiffrées envoyées à un client.
 // Le devis reste modifiable tant qu'il n'a pas été transformé en facture.
 model Devis {
@@ -71,10 +89,16 @@ model Devis {
   numero      Int         @unique @default(autoincrement())
   status      DevisStatus @default(BROUILLON)
 
+  // Copie figée des coordonnées au moment du devis (indépendante de la
+  // fiche Client, qui peut évoluer par la suite) : c'est cette copie qui
+  // fait foi sur le devis et, plus tard, sur la facture émise.
   clientNom     String
   clientEmail   String?
   clientTelephone String?
   clientAdresse String?
+
+  client      Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientId    String?
 
   lignes      LigneDevis[]
   totalHT     Decimal      @default(0) @db.Decimal(10, 2)

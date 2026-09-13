@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
-import { FileText, Receipt, CalendarClock } from "lucide-react";
+import { FileText, Receipt, CalendarClock, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,7 @@ import {
 import { logoutAction } from "./logout-action";
 
 const NAV_ITEMS = [
+  { href: "/dashboard/clients", label: "Clients", icon: Users },
   { href: "/dashboard/devis", label: "Devis", icon: FileText },
   { href: "/dashboard/factures", label: "Factures", icon: Receipt },
   { href: "/dashboard/interventions", label: "Planning", icon: CalendarClock },

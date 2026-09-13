@@ -2,11 +2,20 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { LigneTotals } from "@/components/ligne-totals";
 import { createDevisAction, updateDevisAction } from "./actions";
 
 type Ligne = {
@@ -16,10 +25,20 @@ type Ligne = {
   tauxTVA: number;
 };
 
+type ClientOption = {
+  id: string;
+  nom: string;
+  email?: string | null;
+  telephone?: string | null;
+  adresse?: string | null;
+};
+
 type DevisFormProps = {
   mode: "create" | "edit";
   devisId?: string;
+  clientOptions?: ClientOption[];
   initial?: {
+    clientId?: string | null;
     clientNom: string;
     clientEmail?: string | null;
     clientTelephone?: string | null;
@@ -30,16 +49,32 @@ type DevisFormProps = {
 };
 
 const emptyLigne: Ligne = { description: "", quantite: 1, prixUnitaireHT: 0, tauxTVA: 20 };
+const CLIENT_PONCTUEL = "ponctuel";
 
-export function DevisForm({ mode, devisId, initial }: DevisFormProps) {
+export function DevisForm({ mode, devisId, clientOptions = [], initial }: DevisFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
+  const [clientId, setClientId] = useState(initial?.clientId ?? "");
   const [clientNom, setClientNom] = useState(initial?.clientNom ?? "");
   const [clientEmail, setClientEmail] = useState(initial?.clientEmail ?? "");
   const [clientTelephone, setClientTelephone] = useState(initial?.clientTelephone ?? "");
   const [clientAdresse, setClientAdresse] = useState(initial?.clientAdresse ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
+
+  function handleSelectClient(value: string | null) {
+    if (!value || value === CLIENT_PONCTUEL) {
+      setClientId("");
+      return;
+    }
+    const client = clientOptions.find((c) => c.id === value);
+    if (!client) return;
+    setClientId(client.id);
+    setClientNom(client.nom);
+    setClientEmail(client.email ?? "");
+    setClientTelephone(client.telephone ?? "");
+    setClientAdresse(client.adresse ?? "");
+  }
   const [lignes, setLignes] = useState<Ligne[]>(
     initial?.lignes?.length ? initial.lignes : [{ ...emptyLigne }],
   );
@@ -66,6 +101,7 @@ export function DevisForm({ mode, devisId, initial }: DevisFormProps) {
     event.preventDefault();
 
     const payload = {
+      clientId: clientId || undefined,
       clientNom,
       clientEmail: clientEmail || undefined,
       clientTelephone: clientTelephone || undefined,
@@ -98,6 +134,31 @@ export function DevisForm({ mode, devisId, initial }: DevisFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {clientOptions.length > 0 && (
+        <div className="space-y-2">
+          <Label htmlFor="clientExistant">Client existant</Label>
+          <Select value={clientId || CLIENT_PONCTUEL} onValueChange={handleSelectClient}>
+            <SelectTrigger id="clientExistant" className="w-full">
+              <SelectValue placeholder="Client ponctuel">
+                {(value: string) => {
+                  if (!value || value === CLIENT_PONCTUEL) return "Client ponctuel (saisie libre)";
+                  const client = clientOptions.find((c) => c.id === value);
+                  return client?.nom ?? "Client ponctuel (saisie libre)";
+                }}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={CLIENT_PONCTUEL}>Client ponctuel (saisie libre)</SelectItem>
+              {clientOptions.map((client) => (
+                <SelectItem key={client.id} value={client.id}>
+                  {client.nom}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="clientNom">Client *</Label>
@@ -203,12 +264,12 @@ export function DevisForm({ mode, devisId, initial }: DevisFormProps) {
                 <Button
                   type="button"
                   variant="ghost"
-                  size="sm"
+                  size="icon-sm"
                   onClick={() => removeLigne(index)}
                   disabled={lignes.length === 1}
                   aria-label="Supprimer la ligne"
                 >
-                  ✕
+                  <X />
                 </Button>
               </div>
             </div>
@@ -216,9 +277,7 @@ export function DevisForm({ mode, devisId, initial }: DevisFormProps) {
         </div>
       </div>
 
-      <div className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-        Total HT : {totalHT.toFixed(2)} € — Total TTC : {totalTTC.toFixed(2)} €
-      </div>
+      <LigneTotals totalHT={totalHT} totalTTC={totalTTC} />
 
       <Button type="submit" disabled={isPending}>
         {isPending ? "Enregistrement..." : mode === "create" ? "Créer le devis" : "Enregistrer"}

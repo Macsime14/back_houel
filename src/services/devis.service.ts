@@ -16,7 +16,7 @@ export function listDevis() {
 export function getDevis(id: string) {
   return prisma.devis.findUnique({
     where: { id },
-    include: { lignes: true, facture: true, interventions: true },
+    include: { lignes: true, facture: true, interventions: true, client: true },
   });
 }
 
@@ -25,6 +25,7 @@ export function createDevis(input: CreateDevisInput, createdById: string) {
 
   return prisma.devis.create({
     data: {
+      clientId: input.clientId,
       clientNom: input.clientNom,
       clientEmail: input.clientEmail,
       clientTelephone: input.clientTelephone,
@@ -53,6 +54,7 @@ export async function updateDevis(id: string, input: UpdateDevisInput) {
   }
 
   const data: Record<string, unknown> = {
+    clientId: input.clientId,
     clientNom: input.clientNom,
     clientEmail: input.clientEmail,
     clientTelephone: input.clientTelephone,
