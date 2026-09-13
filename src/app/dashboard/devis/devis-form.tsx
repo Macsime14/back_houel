@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { LigneTotals } from "@/components/ligne-totals";
+import { ClientForm } from "../clients/client-form";
 import { createDevisAction, updateDevisAction } from "./actions";
 
 type Ligne = {
@@ -58,9 +66,11 @@ type DevisFormProps = {
 const emptyLigne: Ligne = { description: "", quantite: 1, prixUnitaireHT: 0, tauxTVA: 20 };
 const CLIENT_PONCTUEL = "ponctuel";
 
-export function DevisForm({ mode, devisId, clientOptions = [], initial }: DevisFormProps) {
+export function DevisForm({ mode, devisId, clientOptions: initialClientOptions = [], initial }: DevisFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [clientOptions, setClientOptions] = useState(initialClientOptions);
+  const [newClientOpen, setNewClientOpen] = useState(false);
 
   const [clientId, setClientId] = useState(initial?.clientId ?? "");
   const [clientNom, setClientNom] = useState(initial?.clientNom ?? "");
@@ -69,6 +79,14 @@ export function DevisForm({ mode, devisId, clientOptions = [], initial }: DevisF
   const [clientAdresse, setClientAdresse] = useState(initial?.clientAdresse ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
 
+  function selectClient(client: ClientOption) {
+    setClientId(client.id);
+    setClientNom(client.nom);
+    setClientEmail(client.email ?? "");
+    setClientTelephone(client.telephone ?? "");
+    setClientAdresse(composeAdresse(client));
+  }
+
   function handleSelectClient(value: string | null) {
     if (!value || value === CLIENT_PONCTUEL) {
       setClientId("");
@@ -76,11 +94,13 @@ export function DevisForm({ mode, devisId, clientOptions = [], initial }: DevisF
     }
     const client = clientOptions.find((c) => c.id === value);
     if (!client) return;
-    setClientId(client.id);
-    setClientNom(client.nom);
-    setClientEmail(client.email ?? "");
-    setClientTelephone(client.telephone ?? "");
-    setClientAdresse(composeAdresse(client));
+    selectClient(client);
+  }
+
+  function handleClientCreated(client: ClientOption) {
+    setClientOptions((prev) => [...prev, client]);
+    selectClient(client);
+    setNewClientOpen(false);
   }
   const [lignes, setLignes] = useState<Ligne[]>(
     initial?.lignes?.length ? initial.lignes : [{ ...emptyLigne }],
@@ -141,30 +161,45 @@ export function DevisForm({ mode, devisId, clientOptions = [], initial }: DevisF
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {clientOptions.length > 0 && (
-        <div className="space-y-2">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
           <Label htmlFor="clientExistant">Client existant</Label>
-          <Select value={clientId || CLIENT_PONCTUEL} onValueChange={handleSelectClient}>
-            <SelectTrigger id="clientExistant" className="w-full">
-              <SelectValue placeholder="Client ponctuel">
-                {(value: string) => {
-                  if (!value || value === CLIENT_PONCTUEL) return "Client ponctuel (saisie libre)";
-                  const client = clientOptions.find((c) => c.id === value);
-                  return client?.nom ?? "Client ponctuel (saisie libre)";
-                }}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={CLIENT_PONCTUEL}>Client ponctuel (saisie libre)</SelectItem>
-              {clientOptions.map((client) => (
-                <SelectItem key={client.id} value={client.id}>
-                  {client.nom}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Dialog open={newClientOpen} onOpenChange={setNewClientOpen}>
+            <DialogTrigger
+              render={
+                <Button type="button" variant="ghost" size="sm">
+                  <Plus /> Nouveau client
+                </Button>
+              }
+            />
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Nouveau client</DialogTitle>
+              </DialogHeader>
+              <ClientForm mode="create" onCreated={handleClientCreated} />
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
+        <Select value={clientId || CLIENT_PONCTUEL} onValueChange={handleSelectClient}>
+          <SelectTrigger id="clientExistant" className="w-full">
+            <SelectValue placeholder="Client ponctuel">
+              {(value: string) => {
+                if (!value || value === CLIENT_PONCTUEL) return "Client ponctuel (saisie libre)";
+                const client = clientOptions.find((c) => c.id === value);
+                return client?.nom ?? "Client ponctuel (saisie libre)";
+              }}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={CLIENT_PONCTUEL}>Client ponctuel (saisie libre)</SelectItem>
+            {clientOptions.map((client) => (
+              <SelectItem key={client.id} value={client.id}>
+                {client.nom}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">

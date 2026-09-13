@@ -23,6 +23,16 @@ const TYPE_LABELS: Record<ClientType, string> = {
   PROFESSIONNEL: "Professionnel",
 };
 
+type CreatedClient = {
+  id: string;
+  nom: string;
+  email: string | null;
+  telephone: string | null;
+  adresse: string | null;
+  codePostal: string | null;
+  ville: string | null;
+};
+
 type ClientFormProps = {
   mode: "create" | "edit";
   clientId?: string;
@@ -36,9 +46,12 @@ type ClientFormProps = {
     ville?: string | null;
     notes?: string | null;
   };
+  /** En mode "create" : si fourni, remplace la redirection vers la fiche
+   * client par cet appel (ex. creation rapide depuis un autre formulaire). */
+  onCreated?: (client: CreatedClient) => void;
 };
 
-export function ClientForm({ mode, clientId, initial }: ClientFormProps) {
+export function ClientForm({ mode, clientId, initial, onCreated }: ClientFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [type, setType] = useState<ClientType>(initial?.type ?? "PARTICULIER");
@@ -72,7 +85,11 @@ export function ClientForm({ mode, clientId, initial }: ClientFormProps) {
           return;
         }
         toast.success("Client créé");
-        router.push(`/dashboard/clients/${result.data.id}`);
+        if (onCreated) {
+          onCreated(result.data);
+        } else {
+          router.push(`/dashboard/clients/${result.data.id}`);
+        }
         return;
       }
 

@@ -6,7 +6,15 @@ import { createClient, deleteClient, updateClient } from "@/services/client.serv
 
 type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
 
-export async function createClientAction(input: unknown): Promise<ActionResult<{ id: string }>> {
+export async function createClientAction(input: unknown): Promise<ActionResult<{
+  id: string;
+  nom: string;
+  email: string | null;
+  telephone: string | null;
+  adresse: string | null;
+  codePostal: string | null;
+  ville: string | null;
+}>> {
   const parsed = createClientSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0]?.message ?? "Données invalides" };
@@ -14,7 +22,18 @@ export async function createClientAction(input: unknown): Promise<ActionResult<{
 
   const client = await createClient(parsed.data);
   revalidatePath("/dashboard/clients");
-  return { success: true, data: { id: client.id } };
+  return {
+    success: true,
+    data: {
+      id: client.id,
+      nom: client.nom,
+      email: client.email,
+      telephone: client.telephone,
+      adresse: client.adresse,
+      codePostal: client.codePostal,
+      ville: client.ville,
+    },
+  };
 }
 
 export async function updateClientAction(id: string, input: unknown): Promise<ActionResult<null>> {
