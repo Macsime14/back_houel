@@ -31,7 +31,14 @@ type ClientOption = {
   email?: string | null;
   telephone?: string | null;
   adresse?: string | null;
+  codePostal?: string | null;
+  ville?: string | null;
 };
+
+function composeAdresse(client: ClientOption) {
+  const ligne2 = [client.codePostal, client.ville].filter(Boolean).join(" ");
+  return [client.adresse, ligne2].filter(Boolean).join(", ");
+}
 
 type DevisFormProps = {
   mode: "create" | "edit";
@@ -73,7 +80,7 @@ export function DevisForm({ mode, devisId, clientOptions = [], initial }: DevisF
     setClientNom(client.nom);
     setClientEmail(client.email ?? "");
     setClientTelephone(client.telephone ?? "");
-    setClientAdresse(client.adresse ?? "");
+    setClientAdresse(composeAdresse(client));
   }
   const [lignes, setLignes] = useState<Ligne[]>(
     initial?.lignes?.length ? initial.lignes : [{ ...emptyLigne }],

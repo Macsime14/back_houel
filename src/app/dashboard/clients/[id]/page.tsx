@@ -41,10 +41,13 @@ export default async function ClientDetailPage({ params }: Params) {
             mode="edit"
             clientId={client.id}
             initial={{
+              type: client.type,
               nom: client.nom,
               email: client.email,
               telephone: client.telephone,
               adresse: client.adresse,
+              codePostal: client.codePostal,
+              ville: client.ville,
               notes: client.notes,
             }}
           />

@@ -31,10 +31,13 @@ export const updateEntrepriseSchema = z.object({
 });
 
 export const createClientSchema = z.object({
+  type: z.enum(["PARTICULIER", "PROFESSIONNEL"]).optional(),
   nom: z.string().min(1),
   email: z.string().email().optional(),
   telephone: z.string().optional(),
   adresse: z.string().optional(),
+  codePostal: z.string().optional(),
+  ville: z.string().optional(),
   notes: z.string().optional(),
 });
 

@@ -36,6 +36,11 @@ enum InterventionStatus {
   ANNULEE
 }
 
+enum ClientType {
+  PARTICULIER
+  PROFESSIONNEL
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -69,11 +74,14 @@ model PasswordResetToken {
 // leur propre copie des coordonnées (voir Devis.clientNom etc.), donc modifier
 // ou supprimer une fiche Client ne change jamais un document déjà émis.
 model Client {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
+  type        ClientType @default(PARTICULIER)
   nom         String
   email       String?
   telephone   String?
   adresse     String?
+  codePostal  String?
+  ville       String?
   notes       String?
 
   devis         Devis[]
