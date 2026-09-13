@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CalendarClock, FileText, Receipt, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -81,65 +82,67 @@ export function GlobalSearch() {
         title="Recherche"
         description="Rechercher un client, un devis, une facture ou une intervention"
       >
-        <CommandInput
-          value={query}
-          onValueChange={setQuery}
-          placeholder="Rechercher un client, un devis, une facture..."
-        />
-        <CommandList>
-          {query.trim().length < 2 ? (
-            <CommandEmpty>Tapez au moins 2 caractères.</CommandEmpty>
-          ) : !hasResults && !isPending ? (
-            <CommandEmpty>Aucun résultat pour « {query} ».</CommandEmpty>
-          ) : (
-            <>
-              {results.clients.length > 0 && (
-                <CommandGroup heading="Clients">
-                  {results.clients.map((r) => (
-                    <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
-                      <Users />
-                      <span>{r.label}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-              {results.devis.length > 0 && (
-                <CommandGroup heading="Devis">
-                  {results.devis.map((r) => (
-                    <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
-                      <FileText />
-                      <span>{r.label}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-              {results.factures.length > 0 && (
-                <CommandGroup heading="Factures">
-                  {results.factures.map((r) => (
-                    <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
-                      <Receipt />
-                      <span>{r.label}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-              {results.interventions.length > 0 && (
-                <CommandGroup heading="Planning">
-                  {results.interventions.map((r) => (
-                    <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
-                      <CalendarClock />
-                      <span>{r.label}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </>
-          )}
-        </CommandList>
+        <Command shouldFilter={false}>
+          <CommandInput
+            value={query}
+            onValueChange={setQuery}
+            placeholder="Rechercher un client, un devis, une facture..."
+          />
+          <CommandList>
+            {query.trim().length < 2 ? (
+              <CommandEmpty>Tapez au moins 2 caractères.</CommandEmpty>
+            ) : !hasResults && !isPending ? (
+              <CommandEmpty>Aucun résultat pour « {query} ».</CommandEmpty>
+            ) : (
+              <>
+                {results.clients.length > 0 && (
+                  <CommandGroup heading="Clients">
+                    {results.clients.map((r) => (
+                      <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
+                        <Users />
+                        <span>{r.label}</span>
+                        <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {results.devis.length > 0 && (
+                  <CommandGroup heading="Devis">
+                    {results.devis.map((r) => (
+                      <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
+                        <FileText />
+                        <span>{r.label}</span>
+                        <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {results.factures.length > 0 && (
+                  <CommandGroup heading="Factures">
+                    {results.factures.map((r) => (
+                      <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
+                        <Receipt />
+                        <span>{r.label}</span>
+                        <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {results.interventions.length > 0 && (
+                  <CommandGroup heading="Planning">
+                    {results.interventions.map((r) => (
+                      <CommandItem key={r.id} value={r.id} onSelect={() => handleSelect(r.href)}>
+                        <CalendarClock />
+                        <span>{r.label}</span>
+                        <span className="ml-auto text-xs text-muted-foreground">{r.sublabel}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+              </>
+            )}
+          </CommandList>
+        </Command>
       </CommandDialog>
     </>
   );
