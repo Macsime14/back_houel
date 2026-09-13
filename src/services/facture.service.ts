@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { calculerTotaux } from "@/lib/montants";
+import { sendRelanceFactureEmail } from "@/lib/email";
+import { getEntreprise } from "@/services/entreprise.service";
 import type { Prisma } from "@/generated/prisma/client";
 
 export function listFactures() {
@@ -109,7 +111,7 @@ export async function deleteFactureBrouillon(id: string) {
 // unique FactureCounter pour garantir une séquence strictement croissante
 // sans trou, même en cas d'émissions concurrentes. La ligne FactureCounter
 // (id=1) doit exister au préalable (créée par la migration d'initialisation).
-export async function emettreFacture(id: string, mentionsLegales?: string) {
+export async function emettreFacture(id: string, mentionsLegales?: string, dateEcheance?: Date) {
   return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const facture = await tx.facture.findUnique({ where: { id } });
     if (!facture) {
@@ -133,6 +135,7 @@ export async function emettreFacture(id: string, mentionsLegales?: string) {
         verrouillee: true,
         emiseAt: new Date(),
         mentionsLegales,
+        dateEcheance,
       },
       include: { lignes: true },
     });
@@ -152,5 +155,38 @@ export async function marquerFacturePayee(id: string) {
     where: { id },
     data: { status: "PAYEE", payeeAt: new Date() },
     include: { lignes: true },
+  });
+}
+
+export function factureEnRetard(facture: { status: string; dateEcheance: Date | null }) {
+  return facture.status === "EMISE" && !!facture.dateEcheance && facture.dateEcheance < new Date();
+}
+
+export async function relancerFacture(id: string) {
+  const facture = await prisma.facture.findUnique({ where: { id }, include: { devis: true } });
+  if (!facture) {
+    throw new Error("Facture introuvable");
+  }
+  if (facture.status !== "EMISE") {
+    throw new Error("Seule une facture émise peut être relancée");
+  }
+  if (!facture.clientEmail) {
+    throw new Error("Ce client n'a pas d'adresse email enregistrée");
+  }
+
+  const entreprise = await getEntreprise();
+
+  await sendRelanceFactureEmail(facture.clientEmail, {
+    numero: facture.numero!,
+    totalTTC: Number(facture.totalTTC).toFixed(2),
+    dateEcheance: facture.dateEcheance
+      ? facture.dateEcheance.toLocaleDateString("fr-FR")
+      : "non définie",
+    entrepriseNom: entreprise.nom,
+  });
+
+  return prisma.facture.update({
+    where: { id },
+    data: { derniereRelanceAt: new Date() },
   });
 }

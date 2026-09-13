@@ -155,8 +155,8 @@ model Facture {
   clientEmail   String?
   clientAdresse String?
 
-  // Mentions légales à figer au moment de l'émission (dépendent du statut
-  // juridique d'Antoine, encore à définir avec lui).
+  // Mentions légales à figer au moment de l'émission (pré-remplies depuis
+  // Paramètres, voir entreprise.service.ts).
   mentionsLegales String?
 
   lignes      LigneFacture[]
@@ -164,7 +164,11 @@ model Facture {
   totalTTC    Decimal @default(0) @db.Decimal(10, 2)
 
   emiseAt     DateTime?
+  // Fixée à l'émission (aujourd'hui + délai de paiement configuré dans
+  // Paramètres), pour savoir quand une facture émise devient en retard.
+  dateEcheance DateTime?
   payeeAt     DateTime?
+  derniereRelanceAt DateTime?
 
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
@@ -235,6 +239,7 @@ model EntrepriseSettings {
   email           String?
   iban            String?
   mentionsComplementaires String?
+  delaiPaiementJours Int   @default(30)
 
   updatedAt       DateTime @updatedAt
 }

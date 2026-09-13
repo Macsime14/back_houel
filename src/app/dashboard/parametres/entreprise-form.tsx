@@ -19,6 +19,7 @@ type EntrepriseFormProps = {
     email: string | null;
     iban: string | null;
     mentionsComplementaires: string | null;
+    delaiPaiementJours: number;
   };
 };
 
@@ -35,6 +36,7 @@ export function EntrepriseForm({ initial }: EntrepriseFormProps) {
   const [mentionsComplementaires, setMentionsComplementaires] = useState(
     initial.mentionsComplementaires ?? "",
   );
+  const [delaiPaiementJours, setDelaiPaiementJours] = useState(String(initial.delaiPaiementJours));
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -49,6 +51,7 @@ export function EntrepriseForm({ initial }: EntrepriseFormProps) {
       email: email || undefined,
       iban: iban || undefined,
       mentionsComplementaires: mentionsComplementaires || undefined,
+      delaiPaiementJours: delaiPaiementJours || undefined,
     };
 
     startTransition(async () => {
@@ -110,6 +113,16 @@ export function EntrepriseForm({ initial }: EntrepriseFormProps) {
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="iban">IBAN (coordonnées bancaires)</Label>
           <Input id="iban" value={iban} onChange={(e) => setIban(e.target.value)} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="delaiPaiementJours">Délai de paiement par défaut (jours)</Label>
+          <Input
+            id="delaiPaiementJours"
+            type="number"
+            min={1}
+            value={delaiPaiementJours}
+            onChange={(e) => setDelaiPaiementJours(e.target.value)}
+          />
         </div>
       </div>
 

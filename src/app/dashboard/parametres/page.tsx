@@ -28,6 +28,7 @@ export default async function ParametresPage() {
               email: entreprise.email,
               iban: entreprise.iban,
               mentionsComplementaires: entreprise.mentionsComplementaires,
+              delaiPaiementJours: entreprise.delaiPaiementJours,
             }}
           />
         </CardContent>

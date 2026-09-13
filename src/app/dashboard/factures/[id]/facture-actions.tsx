@@ -3,10 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CircleCheck, CreditCard, Trash2 } from "lucide-react";
+import { Bell, CircleCheck, CreditCard, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { DateField } from "@/components/ui/date-field";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,22 +20,38 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { FactureStatus } from "@/generated/prisma/client";
-import { deleteFactureAction, emettreFactureAction, marquerPayeeAction } from "../actions";
+import {
+  deleteFactureAction,
+  emettreFactureAction,
+  marquerPayeeAction,
+  relancerFactureAction,
+} from "../actions";
 
 type FactureActionsProps = {
   factureId: string;
   status: FactureStatus;
   mentionsLegalesSuggeree: string;
+  dateEcheanceSuggeree: string;
+  clientEmail: string | null;
+  enRetard: boolean;
 };
 
-export function FactureActions({ factureId, status, mentionsLegalesSuggeree }: FactureActionsProps) {
+export function FactureActions({
+  factureId,
+  status,
+  mentionsLegalesSuggeree,
+  dateEcheanceSuggeree,
+  clientEmail,
+  enRetard,
+}: FactureActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [mentionsLegales, setMentionsLegales] = useState(mentionsLegalesSuggeree);
+  const [dateEcheance, setDateEcheance] = useState(dateEcheanceSuggeree);
 
   function handleEmettre() {
     startTransition(async () => {
-      const result = await emettreFactureAction(factureId, mentionsLegales);
+      const result = await emettreFactureAction(factureId, mentionsLegales, dateEcheance);
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -52,6 +69,18 @@ export function FactureActions({ factureId, status, mentionsLegalesSuggeree }: F
         return;
       }
       toast.success("Facture marquée comme payée");
+      router.refresh();
+    });
+  }
+
+  function handleRelancer() {
+    startTransition(async () => {
+      const result = await relancerFactureAction(factureId);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Email de relance envoyé");
       router.refresh();
     });
   }
@@ -87,6 +116,12 @@ export function FactureActions({ factureId, status, mentionsLegalesSuggeree }: F
                 verrouillée (plus aucune modification possible).
               </AlertDialogDescription>
             </AlertDialogHeader>
+            <div className="space-y-2">
+              <Label htmlFor="dateEcheance" className="text-xs text-muted-foreground">
+                Échéance de paiement
+              </Label>
+              <DateField id="dateEcheance" value={dateEcheance} onChange={setDateEcheance} />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="mentionsLegales" className="text-xs text-muted-foreground">
                 Mentions légales (optionnel)
@@ -131,9 +166,35 @@ export function FactureActions({ factureId, status, mentionsLegalesSuggeree }: F
 
   if (status === "EMISE") {
     return (
-      <Button size="sm" disabled={isPending} onClick={handleMarquerPayee}>
-        <CreditCard /> Marquer comme payée
-      </Button>
+      <div className="flex items-center gap-2">
+        {enRetard && (
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={
+                <Button size="sm" variant="outline" disabled={isPending || !clientEmail}>
+                  <Bell /> Relancer le client
+                </Button>
+              }
+            />
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Relancer ce client ?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Un email de rappel sera envoyé à {clientEmail} pour cette facture en retard de
+                  paiement.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction onClick={handleRelancer}>Envoyer la relance</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+        <Button size="sm" disabled={isPending} onClick={handleMarquerPayee}>
+          <CreditCard /> Marquer comme payée
+        </Button>
+      </div>
     );
   }
 

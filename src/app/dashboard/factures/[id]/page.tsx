@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getFacture } from "@/services/facture.service";
+import { factureEnRetard, getFacture } from "@/services/facture.service";
 import { composerMentionsLegales, getEntreprise } from "@/services/entreprise.service";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { InfoField, InfoGrid } from "@/components/info-grid";
 import { LigneTotals } from "@/components/ligne-totals";
 import { LignesReadOnlyTable } from "@/components/lignes-table";
@@ -21,11 +22,17 @@ export default async function FactureDetailPage({ params }: Params) {
   }
 
   const mentionsLegalesSuggeree = composerMentionsLegales(entreprise);
+  const enRetard = factureEnRetard(facture);
 
   const totalHT = facture.lignes.reduce(
     (sum, ligne) => sum + Number(ligne.quantite) * Number(ligne.prixUnitaireHT),
     0,
   );
+
+  const dateEcheanceSuggeree = new Date();
+  dateEcheanceSuggeree.setDate(dateEcheanceSuggeree.getDate() + entreprise.delaiPaiementJours);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const dateEcheanceSuggereeStr = `${dateEcheanceSuggeree.getFullYear()}-${pad(dateEcheanceSuggeree.getMonth() + 1)}-${pad(dateEcheanceSuggeree.getDate())}`;
 
   return (
     <div className="space-y-6">
@@ -35,11 +42,19 @@ export default async function FactureDetailPage({ params }: Params) {
             {facture.numero ? `Facture n°${facture.numero}` : "Facture (brouillon)"}
           </h1>
           <FactureStatusBadge status={facture.status} />
+          {enRetard && (
+            <Badge variant="outline" className="bg-[#f6e4e0] text-[#99493a] hover:bg-[#f6e4e0]">
+              En retard
+            </Badge>
+          )}
         </div>
         <FactureActions
           factureId={facture.id}
           status={facture.status}
           mentionsLegalesSuggeree={mentionsLegalesSuggeree}
+          dateEcheanceSuggeree={dateEcheanceSuggereeStr}
+          clientEmail={facture.clientEmail}
+          enRetard={enRetard}
         />
       </div>
 
@@ -58,9 +73,21 @@ export default async function FactureDetailPage({ params }: Params) {
                 {new Date(facture.emiseAt).toLocaleDateString("fr-FR")}
               </InfoField>
             )}
+            {facture.dateEcheance && (
+              <InfoField label="Échéance">
+                <span className={enRetard ? "font-medium text-destructive" : undefined}>
+                  {new Date(facture.dateEcheance).toLocaleDateString("fr-FR")}
+                </span>
+              </InfoField>
+            )}
             {facture.payeeAt && (
               <InfoField label="Payée le">
                 {new Date(facture.payeeAt).toLocaleDateString("fr-FR")}
+              </InfoField>
+            )}
+            {facture.derniereRelanceAt && (
+              <InfoField label="Dernière relance">
+                {new Date(facture.derniereRelanceAt).toLocaleDateString("fr-FR")}
               </InfoField>
             )}
           </InfoGrid>

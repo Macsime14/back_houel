@@ -9,6 +9,7 @@ import {
   deleteFactureBrouillon,
   emettreFacture,
   marquerFacturePayee,
+  relancerFacture,
   updateFactureBrouillon,
 } from "@/services/facture.service";
 
@@ -60,14 +61,29 @@ export async function deleteFactureAction(id: string): Promise<ActionResult<null
   return { success: true, data: null };
 }
 
-export async function emettreFactureAction(id: string, mentionsLegales?: string): Promise<ActionResult<null>> {
+export async function emettreFactureAction(
+  id: string,
+  mentionsLegales?: string,
+  dateEcheance?: string,
+): Promise<ActionResult<null>> {
   try {
-    await emettreFacture(id, mentionsLegales || undefined);
+    await emettreFacture(id, mentionsLegales || undefined, dateEcheance ? new Date(dateEcheance) : undefined);
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Erreur inattendue" };
   }
 
   revalidatePath("/dashboard/factures");
+  revalidatePath(`/dashboard/factures/${id}`);
+  return { success: true, data: null };
+}
+
+export async function relancerFactureAction(id: string): Promise<ActionResult<null>> {
+  try {
+    await relancerFacture(id);
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Erreur inattendue" };
+  }
+
   revalidatePath(`/dashboard/factures/${id}`);
   return { success: true, data: null };
 }

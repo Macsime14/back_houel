@@ -27,6 +27,7 @@ export const updateEntrepriseSchema = z.object({
   email: z.string().email().optional(),
   iban: z.string().optional(),
   mentionsComplementaires: z.string().optional(),
+  delaiPaiementJours: z.coerce.number().int().positive().optional(),
 });
 
 export const createClientSchema = z.object({

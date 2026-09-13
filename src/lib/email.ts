@@ -14,3 +14,22 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     `,
   });
 }
+
+export async function sendRelanceFactureEmail(
+  to: string,
+  info: { numero: number; totalTTC: string; dateEcheance: string; entrepriseNom: string },
+) {
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
+    to,
+    subject: `Rappel : facture n°${info.numero} en attente de paiement`,
+    html: `
+      <p>Bonjour,</p>
+      <p>Sauf erreur de notre part, la facture n°${info.numero} d'un montant de ${info.totalTTC} €,
+      dont l'échéance était fixée au ${info.dateEcheance}, ne nous est pas encore parvenue.</p>
+      <p>Pourriez-vous nous indiquer où en est son règlement ? N'hésitez pas à nous contacter en cas
+      de question.</p>
+      <p>Cordialement,<br>${info.entrepriseNom}</p>
+    `,
+  });
+}

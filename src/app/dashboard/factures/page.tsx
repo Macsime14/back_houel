@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Receipt } from "lucide-react";
-import { listFactures } from "@/services/facture.service";
+import { factureEnRetard, listFactures } from "@/services/facture.service";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -52,7 +53,14 @@ export default async function FacturesListPage() {
                 <TableCell>{facture.numero ?? "—"}</TableCell>
                 <TableCell>{facture.clientNom}</TableCell>
                 <TableCell>
-                  <FactureStatusBadge status={facture.status} />
+                  <div className="flex items-center gap-1.5">
+                    <FactureStatusBadge status={facture.status} />
+                    {factureEnRetard(facture) && (
+                      <Badge variant="outline" className="bg-[#f6e4e0] text-[#99493a] hover:bg-[#f6e4e0]">
+                        En retard
+                      </Badge>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   {Number(facture.totalTTC).toFixed(2)} €
