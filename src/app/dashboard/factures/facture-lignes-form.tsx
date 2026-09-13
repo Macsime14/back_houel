@@ -2,10 +2,12 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LigneTotals } from "@/components/ligne-totals";
 import { updateFactureBrouillonAction } from "./actions";
 
 type Ligne = {
@@ -111,21 +113,19 @@ export function FactureLignesForm({ factureId, initialLignes }: { factureId: str
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
+                size="icon-sm"
                 onClick={() => removeLigne(index)}
                 disabled={lignes.length === 1}
                 aria-label="Supprimer la ligne"
               >
-                ✕
+                <X />
               </Button>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-        Total HT : {totalHT.toFixed(2)} € — Total TTC : {totalTTC.toFixed(2)} €
-      </div>
+      <LigneTotals totalHT={totalHT} totalTTC={totalTTC} />
 
       <Button type="submit" disabled={isPending}>
         {isPending ? "Enregistrement..." : "Enregistrer"}

@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { CalendarClock, Plus } from "lucide-react";
 import { listInterventions } from "@/services/intervention.service";
 import { buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -61,8 +62,13 @@ export default async function PlanningPage() {
               <TableBody>
                 {interventions.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
-                      Aucune intervention planifiée pour l&apos;instant.
+                    <TableCell colSpan={5}>
+                      <EmptyState
+                        icon={CalendarClock}
+                        title="Aucune intervention planifiée"
+                        description="Ajoutez votre prochaine intervention au planning."
+                        action={{ label: "Nouvelle intervention", href: "/dashboard/interventions/nouveau" }}
+                      />
                     </TableCell>
                   </TableRow>
                 )}

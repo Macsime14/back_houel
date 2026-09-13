@@ -8,7 +8,7 @@ import { cn } from "cn";
 import type { Intervention } from "@/generated/prisma/client";
 
 const STATUS_DOT: Record<Intervention["status"], string> = {
-  PLANIFIEE: "bg-[#92702a]",
+  PLANIFIEE: "bg-[#7a5a20]",
   CONFIRMEE: "bg-[#2f6690]",
   TERMINEE: "bg-[#34693f]",
   ANNULEE: "bg-[#99493a]",

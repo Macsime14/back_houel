@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFacture } from "@/services/facture.service";
 import { Card, CardContent } from "@/components/ui/card";
+import { InfoField, InfoGrid } from "@/components/info-grid";
+import { LigneTotals } from "@/components/ligne-totals";
+import { LignesReadOnlyTable } from "@/components/lignes-table";
 import { FactureStatusBadge } from "../status-badge";
 import { FactureLignesForm } from "../facture-lignes-form";
 import { FactureActions } from "./facture-actions";
@@ -15,6 +18,11 @@ export default async function FactureDetailPage({ params }: Params) {
   if (!facture) {
     notFound();
   }
+
+  const totalHT = facture.lignes.reduce(
+    (sum, ligne) => sum + Number(ligne.quantite) * Number(ligne.prixUnitaireHT),
+    0,
+  );
 
   return (
     <div className="space-y-6">
@@ -30,38 +38,25 @@ export default async function FactureDetailPage({ params }: Params) {
 
       <Card>
         <CardContent className="space-y-4 pt-6">
-          <dl className="grid gap-2 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-muted-foreground">Client</dt>
-              <dd>{facture.clientNom}</dd>
-            </div>
-            {facture.clientEmail && (
-              <div>
-                <dt className="text-muted-foreground">Email</dt>
-                <dd>{facture.clientEmail}</dd>
-              </div>
-            )}
-            <div>
-              <dt className="text-muted-foreground">Devis d&apos;origine</dt>
-              <dd>
-                <Link href={`/dashboard/devis/${facture.devisId}`} className="text-primary hover:underline">
-                  Voir le devis
-                </Link>
-              </dd>
-            </div>
+          <InfoGrid>
+            <InfoField label="Client">{facture.clientNom}</InfoField>
+            {facture.clientEmail && <InfoField label="Email">{facture.clientEmail}</InfoField>}
+            <InfoField label="Devis d'origine">
+              <Link href={`/dashboard/devis/${facture.devisId}`} className="text-primary hover:underline">
+                Voir le devis
+              </Link>
+            </InfoField>
             {facture.emiseAt && (
-              <div>
-                <dt className="text-muted-foreground">Émise le</dt>
-                <dd>{new Date(facture.emiseAt).toLocaleDateString("fr-FR")}</dd>
-              </div>
+              <InfoField label="Émise le">
+                {new Date(facture.emiseAt).toLocaleDateString("fr-FR")}
+              </InfoField>
             )}
             {facture.payeeAt && (
-              <div>
-                <dt className="text-muted-foreground">Payée le</dt>
-                <dd>{new Date(facture.payeeAt).toLocaleDateString("fr-FR")}</dd>
-              </div>
+              <InfoField label="Payée le">
+                {new Date(facture.payeeAt).toLocaleDateString("fr-FR")}
+              </InfoField>
             )}
-          </dl>
+          </InfoGrid>
 
           {facture.mentionsLegales && (
             <p className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
@@ -70,23 +65,20 @@ export default async function FactureDetailPage({ params }: Params) {
           )}
 
           {facture.verrouillee ? (
-            <div className="space-y-2">
+            <div className="space-y-4">
               <p className="rounded-md bg-muted p-3 text-sm text-muted-foreground">
                 Cette facture a été émise, elle n&apos;est plus modifiable.
               </p>
-              <ul className="divide-y divide-border text-sm">
-                {facture.lignes.map((ligne) => (
-                  <li key={ligne.id} className="flex justify-between py-2">
-                    <span>
-                      {ligne.description} × {ligne.quantite.toString()}
-                    </span>
-                    <span>{(Number(ligne.quantite) * Number(ligne.prixUnitaireHT)).toFixed(2)} € HT</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-right text-sm font-medium text-foreground">
-                Total TTC : {Number(facture.totalTTC).toFixed(2)} €
-              </p>
+              <LignesReadOnlyTable
+                lignes={facture.lignes.map((ligne) => ({
+                  id: ligne.id,
+                  description: ligne.description,
+                  quantite: Number(ligne.quantite),
+                  prixUnitaireHT: Number(ligne.prixUnitaireHT),
+                  tauxTVA: Number(ligne.tauxTVA),
+                }))}
+              />
+              <LigneTotals totalHT={totalHT} totalTTC={Number(facture.totalTTC)} />
             </div>
           ) : (
             <FactureLignesForm

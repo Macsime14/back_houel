@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { ArrowRight, Receipt } from "lucide-react";
 import { listFactures } from "@/services/facture.service";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -35,8 +37,13 @@ export default async function FacturesListPage() {
           <TableBody>
             {factures.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                  Aucune facture pour l&apos;instant. Elles se créent depuis un devis accepté.
+                <TableCell colSpan={6}>
+                  <EmptyState
+                    icon={Receipt}
+                    title="Aucune facture pour l'instant"
+                    description="Les factures se créent depuis un devis accepté."
+                    action={{ label: "Voir les devis", href: "/dashboard/devis", icon: ArrowRight }}
+                  />
                 </TableCell>
               </TableRow>
             )}

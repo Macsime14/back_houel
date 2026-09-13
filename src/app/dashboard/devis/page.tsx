@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import { listDevis } from "@/services/devis.service";
 import { buttonVariants } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -42,8 +43,13 @@ export default async function DevisListPage() {
           <TableBody>
             {devis.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                  Aucun devis pour l&apos;instant.
+                <TableCell colSpan={6}>
+                  <EmptyState
+                    icon={FileText}
+                    title="Aucun devis pour l'instant"
+                    description="Créez votre premier devis pour un client."
+                    action={{ label: "Nouveau devis", href: "/dashboard/devis/nouveau" }}
+                  />
                 </TableCell>
               </TableRow>
             )}
