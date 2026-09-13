@@ -12,8 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { FileText } from "lucide-react";
+import { CalendarClock, FileText } from "lucide-react";
 import { DevisStatusBadge } from "../../devis/status-badge";
+import { InterventionStatusBadge } from "../../interventions/status-badge";
 import { ClientForm } from "../client-form";
 import { ClientActions } from "./client-actions";
 
@@ -100,6 +101,58 @@ export default async function ClientDetailPage({ params }: Params) {
                     <TableCell className="text-right">
                       <Link
                         href={`/dashboard/devis/${devis.id}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Voir
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold text-foreground">Interventions</h2>
+
+        {client.interventions.length === 0 ? (
+          <div className="rounded-md border border-border bg-card">
+            <EmptyState
+              icon={CalendarClock}
+              title="Aucune intervention pour ce client"
+              description="Les interventions planifiées pour ce client apparaîtront ici."
+            />
+          </div>
+        ) : (
+          <div className="rounded-md border border-border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Titre</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="sr-only">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {client.interventions.map((intervention) => (
+                  <TableRow key={intervention.id}>
+                    <TableCell>{intervention.titre}</TableCell>
+                    <TableCell>
+                      {new Date(intervention.debut).toLocaleDateString("fr-FR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <InterventionStatusBadge status={intervention.status} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        href={`/dashboard/interventions/${intervention.id}`}
                         className="text-sm text-primary hover:underline"
                       >
                         Voir

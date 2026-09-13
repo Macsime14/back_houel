@@ -7,13 +7,16 @@ type UpdateInterventionInput = z.infer<typeof updateInterventionSchema>;
 
 export function listInterventions() {
   return prisma.intervention.findMany({
-    include: { devis: true },
+    include: { devis: true, client: true },
     orderBy: { debut: "asc" },
   });
 }
 
 export function getIntervention(id: string) {
-  return prisma.intervention.findUnique({ where: { id }, include: { devis: true } });
+  return prisma.intervention.findUnique({
+    where: { id },
+    include: { devis: true, client: true },
+  });
 }
 
 export function createIntervention(input: CreateInterventionInput) {

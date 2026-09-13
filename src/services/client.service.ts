@@ -20,6 +20,9 @@ export function getClient(id: string) {
         include: { facture: true },
         orderBy: { createdAt: "desc" },
       },
+      interventions: {
+        orderBy: { debut: "desc" },
+      },
     },
   });
 }

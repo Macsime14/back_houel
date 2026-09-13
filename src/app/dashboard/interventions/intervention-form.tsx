@@ -18,16 +18,19 @@ import {
 import { createInterventionAction, updateInterventionAction } from "./actions";
 
 type DevisOption = { id: string; numero: number; clientNom: string };
+type ClientOption = { id: string; nom: string };
 
 type InterventionFormProps = {
   mode: "create" | "edit";
   interventionId?: string;
   devisOptions: DevisOption[];
+  clientOptions: ClientOption[];
   initial?: {
     titre: string;
     debut: string;
     fin: string;
     devisId?: string | null;
+    clientId?: string | null;
     notes?: string | null;
   };
 };
@@ -44,6 +47,7 @@ export function InterventionForm({
   mode,
   interventionId,
   devisOptions,
+  clientOptions,
   initial,
 }: InterventionFormProps) {
   const router = useRouter();
@@ -52,6 +56,7 @@ export function InterventionForm({
   const [debut, setDebut] = useState(initial ? toLocalInputValue(initial.debut) : "");
   const [fin, setFin] = useState(initial ? toLocalInputValue(initial.fin) : "");
   const [devisId, setDevisId] = useState(initial?.devisId ?? "");
+  const [clientId, setClientId] = useState(initial?.clientId ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
 
   function handleSubmit(event: FormEvent) {
@@ -62,6 +67,7 @@ export function InterventionForm({
       debut,
       fin,
       devisId: devisId || undefined,
+      clientId: clientId || undefined,
       notes: notes || undefined,
     };
 
@@ -103,6 +109,31 @@ export function InterventionForm({
           <Label htmlFor="fin">Fin *</Label>
           <DateTimeField id="fin" value={fin} onChange={setFin} required />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="client">Client (optionnel)</Label>
+        <Select
+          value={clientId || NONE_VALUE}
+          onValueChange={(value) => setClientId(!value || value === NONE_VALUE ? "" : value)}
+        >
+          <SelectTrigger id="client" className="w-full">
+            <SelectValue placeholder="Aucun">
+              {(value: string | null) => {
+                const option = clientOptions.find((c) => c.id === value);
+                return option ? option.nom : "Aucun";
+              }}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NONE_VALUE}>Aucun</SelectItem>
+            {clientOptions.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.nom}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

@@ -36,6 +36,7 @@ export const createInterventionSchema = z.object({
   debut: z.coerce.date(),
   fin: z.coerce.date(),
   devisId: z.string().optional(),
+  clientId: z.string().optional(),
   notes: z.string().optional(),
 });
 

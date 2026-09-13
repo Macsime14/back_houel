@@ -76,7 +76,8 @@ model Client {
   adresse     String?
   notes       String?
 
-  devis       Devis[]
+  devis         Devis[]
+  interventions Intervention[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -207,6 +208,11 @@ model Intervention {
 
   devis       Devis?  @relation(fields: [devisId], references: [id])
   devisId     String?
+
+  // Optionnel : un rendez-vous peut concerner un client sans devis associé
+  // (ex: visite de courtoisie, dépannage à chiffrer sur place).
+  client      Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientId    String?
 
   notes       String?
 
