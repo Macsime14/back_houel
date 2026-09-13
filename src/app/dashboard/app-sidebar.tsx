@@ -32,7 +32,10 @@ export function AppSidebar({ userEmail }: { userEmail: string }) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2.5 px-2 py-2">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-accent"
+        >
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary font-heading text-sm font-semibold text-primary-foreground">
             HP
           </div>
@@ -42,7 +45,7 @@ export function AppSidebar({ userEmail }: { userEmail: string }) {
             </span>
             <span className="truncate text-xs text-muted-foreground">Administration</span>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
