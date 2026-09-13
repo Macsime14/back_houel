@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { listDevis } from "@/services/devis.service";
-import { listFactures } from "@/services/facture.service";
+import { factureEnRetard, listFactures } from "@/services/facture.service";
 import { listInterventions } from "@/services/intervention.service";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DevisStatusBadge } from "./devis/status-badge";
 import { FactureStatusBadge } from "./factures/status-badge";
+import { InterventionStatusBadge } from "./interventions/status-badge";
 
 export default async function DashboardHomePage() {
   const [devis, factures, interventions] = await Promise.all([
@@ -15,23 +16,46 @@ export default async function DashboardHomePage() {
     listInterventions(),
   ]);
 
-  const devisEnAttente = devis.filter((d) => d.status === "ENVOYE").length;
-  const facturesImpayees = factures.filter((f) => f.status === "EMISE").length;
+  const now = new Date();
+  const debutMois = new Date(now.getFullYear(), now.getMonth(), 1);
+  const finSemaine = new Date(now);
+  finSemaine.setDate(finSemaine.getDate() + 7);
 
-  const dansLes48h = new Date();
-  dansLes48h.setDate(dansLes48h.getDate() + 2);
-  const interventionsAVenir = interventions.filter(
-    (i) => i.status !== "ANNULEE" && i.debut > new Date() && i.debut <= dansLes48h,
-  ).length;
+  const encaisseMois = factures
+    .filter((f) => f.status === "PAYEE" && f.payeeAt && f.payeeAt >= debutMois)
+    .reduce((sum, f) => sum + Number(f.totalTTC), 0);
+
+  const facturesImpayeesListe = factures.filter((f) => f.status === "EMISE");
+  const facturesEnRetard = facturesImpayeesListe.filter((f) => factureEnRetard(f)).length;
+
+  const interventionsSemaineListe = interventions
+    .filter((i) => i.status !== "ANNULEE" && i.debut >= now && i.debut <= finSemaine)
+    .sort((a, b) => a.debut.getTime() - b.debut.getTime());
 
   const stats = [
-    { label: "Devis en attente de réponse", value: devisEnAttente, href: "/dashboard/devis" },
-    { label: "Facture(s) émise(s) non payée(s)", value: facturesImpayees, href: "/dashboard/factures" },
-    { label: "Intervention(s) à venir", value: interventionsAVenir, href: "/dashboard/interventions" },
+    {
+      label: "Encaissé ce mois",
+      value: `${encaisseMois.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} €`,
+      sub: null,
+      href: "/dashboard/factures",
+    },
+    {
+      label: "Factures impayées",
+      value: String(facturesImpayeesListe.length),
+      sub: facturesEnRetard > 0 ? `dont ${facturesEnRetard} en retard` : null,
+      href: "/dashboard/factures",
+    },
+    {
+      label: "Interventions cette semaine",
+      value: String(interventionsSemaineListe.length),
+      sub: null,
+      href: "/dashboard/interventions",
+    },
   ];
 
   const devisRecents = devis.slice(0, 3);
   const facturesRecentes = factures.slice(0, 3);
+  const interventionsSemaine = interventionsSemaineListe.slice(0, 4);
 
   return (
     <div className="space-y-8">
@@ -48,12 +72,15 @@ export default async function DashboardHomePage() {
                 {stat.value}
               </span>
               <span className="text-xs text-muted-foreground">{stat.label}</span>
+              {stat.sub && (
+                <span className="mt-0.5 block text-xs font-medium text-destructive">{stat.sub}</span>
+              )}
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="grid gap-8 sm:grid-cols-2">
+      <div className="grid gap-8 lg:grid-cols-3">
         <div>
           <div className="flex items-center justify-between border-b border-border pb-2">
             <h2 className="text-sm font-semibold text-foreground">Devis récents</h2>
@@ -119,6 +146,37 @@ export default async function DashboardHomePage() {
                       </span>
                       <FactureStatusBadge status={f.status} />
                     </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h2 className="text-sm font-semibold text-foreground">Interventions de la semaine</h2>
+            <Link href="/dashboard/interventions" className="text-xs text-primary hover:underline">
+              tout voir
+            </Link>
+          </div>
+          {interventionsSemaine.length === 0 ? (
+            <p className="py-4 text-sm text-muted-foreground">Rien de prévu cette semaine.</p>
+          ) : (
+            <ul>
+              {interventionsSemaine.map((i) => (
+                <li key={i.id}>
+                  <Link
+                    href={`/dashboard/interventions/${i.id}`}
+                    className="flex items-center justify-between gap-3 border-b border-border py-3 text-sm last:border-0 hover:text-primary"
+                  >
+                    <span className="flex items-center gap-2 overflow-hidden">
+                      <span className="shrink-0 font-mono text-xs font-medium text-foreground">
+                        {i.debut.toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit" })}
+                      </span>
+                      <span className="truncate text-muted-foreground">{i.titre}</span>
+                    </span>
+                    <InterventionStatusBadge status={i.status} />
                   </Link>
                 </li>
               ))}
