@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { resetPasswordAction } from "./actions";
 
@@ -14,10 +14,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <input type="hidden" name="token" value={token} />
       <div className="space-y-2">
         <Label htmlFor="password">Nouveau mot de passe</Label>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"
@@ -25,10 +24,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="confirmation">Confirmer le mot de passe</Label>
-        <Input
+        <PasswordInput
           id="confirmation"
           name="confirmation"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"

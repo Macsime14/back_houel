@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { loginAction } from "./actions";
@@ -24,7 +25,7 @@ export function LoginForm({ resetSuccess }: { resetSuccess: boolean }) {
             Mot de passe oublié ?
           </Link>
         </div>
-        <Input id="password" name="password" type="password" required autoComplete="current-password" />
+        <PasswordInput id="password" name="password" required autoComplete="current-password" />
       </div>
 
       <div className="flex items-center gap-2">
