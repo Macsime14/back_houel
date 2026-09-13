@@ -15,8 +15,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4 sm:px-8">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-5" />
-          <Breadcrumb />
-          <div className="ml-auto">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <Breadcrumb />
+          </div>
+          <div className="shrink-0">
             <GlobalSearch />
           </div>
         </div>

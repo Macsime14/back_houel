@@ -27,18 +27,26 @@ export function Breadcrumb() {
   ];
 
   return (
-    <nav aria-label="Fil d'Ariane" className="flex items-center gap-1.5 text-sm">
+    <nav aria-label="Fil d'Ariane" className="flex min-w-0 items-center gap-1.5 text-sm">
       {crumbs.map((crumb, index) => {
         const isLast = index === crumbs.length - 1;
         return (
-          <span key={crumb.href} className="flex items-center gap-1.5">
-            {index > 0 && <ChevronRight className="size-3.5 text-muted-foreground" />}
+          <span
+            key={crumb.href}
+            className={cn(
+              "flex min-w-0 items-center gap-1.5",
+              !isLast && "hidden shrink-0 sm:flex",
+            )}
+          >
+            {index > 0 && (
+              <ChevronRight className="hidden size-3.5 shrink-0 text-muted-foreground sm:block" />
+            )}
             {isLast ? (
-              <span className="font-medium text-foreground">{crumb.label}</span>
+              <span className="truncate font-medium text-foreground">{crumb.label}</span>
             ) : (
               <Link
                 href={crumb.href}
-                className={cn("text-muted-foreground hover:text-foreground hover:underline")}
+                className={cn("truncate text-muted-foreground hover:text-foreground hover:underline")}
               >
                 {crumb.label}
               </Link>
