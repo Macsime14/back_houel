@@ -44,7 +44,15 @@ export default async function PlanningPage() {
         </TabsList>
 
         <TabsContent value="calendrier" className="mt-4">
-          <CalendarView interventions={interventions} />
+          <CalendarView
+            interventions={interventions.map((i) => ({
+              id: i.id,
+              titre: i.titre,
+              debut: i.debut,
+              fin: i.fin,
+              status: i.status,
+            }))}
+          />
         </TabsContent>
 
         <TabsContent value="liste" className="mt-4">
