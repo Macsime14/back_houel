@@ -2,6 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DateTimeField } from "@/components/ui/datetime-field";
@@ -15,6 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ClientForm } from "../clients/client-form";
 import { createInterventionAction, updateInterventionAction } from "./actions";
 
 type DevisOption = { id: string; numero: number; clientNom: string };
@@ -47,17 +56,25 @@ export function InterventionForm({
   mode,
   interventionId,
   devisOptions,
-  clientOptions,
+  clientOptions: initialClientOptions,
   initial,
 }: InterventionFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [clientOptions, setClientOptions] = useState(initialClientOptions);
+  const [newClientOpen, setNewClientOpen] = useState(false);
   const [titre, setTitre] = useState(initial?.titre ?? "");
   const [debut, setDebut] = useState(initial ? toLocalInputValue(initial.debut) : "");
   const [fin, setFin] = useState(initial ? toLocalInputValue(initial.fin) : "");
   const [devisId, setDevisId] = useState(initial?.devisId ?? "");
   const [clientId, setClientId] = useState(initial?.clientId ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
+
+  function handleClientCreated(client: ClientOption) {
+    setClientOptions((prev) => [...prev, client]);
+    setClientId(client.id);
+    setNewClientOpen(false);
+  }
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -112,7 +129,24 @@ export function InterventionForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="client">Client (optionnel)</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="client">Client (optionnel)</Label>
+          <Dialog open={newClientOpen} onOpenChange={setNewClientOpen}>
+            <DialogTrigger
+              render={
+                <Button type="button" variant="ghost" size="sm">
+                  <Plus /> Nouveau client
+                </Button>
+              }
+            />
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Nouveau client</DialogTitle>
+              </DialogHeader>
+              <ClientForm mode="create" onCreated={handleClientCreated} />
+            </DialogContent>
+          </Dialog>
+        </div>
         <Select
           value={clientId || NONE_VALUE}
           onValueChange={(value) => setClientId(!value || value === NONE_VALUE ? "" : value)}
