@@ -17,6 +17,18 @@ export const createDevisSchema = z.object({
   lignes: z.array(ligneSchema).min(1),
 });
 
+export const updateEntrepriseSchema = z.object({
+  nom: z.string().min(1),
+  statutJuridique: z.string().optional(),
+  siret: z.string().optional(),
+  numeroTVA: z.string().optional(),
+  adresse: z.string().optional(),
+  telephone: z.string().optional(),
+  email: z.string().email().optional(),
+  iban: z.string().optional(),
+  mentionsComplementaires: z.string().optional(),
+});
+
 export const createClientSchema = z.object({
   nom: z.string().min(1),
   email: z.string().email().optional(),

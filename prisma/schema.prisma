@@ -219,3 +219,22 @@ model Intervention {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// Ligne unique (id fixe = 1) : coordonnées de l'entreprise, saisies une
+// fois par l'utilisateur dans Paramètres. Sert à pré-remplir les mentions
+// légales obligatoires au moment de l'émission d'une facture (voir
+// facture.service.ts), plutôt que de les retaper à chaque fois.
+model EntrepriseSettings {
+  id              Int      @id @default(1)
+  nom             String   @default("Houel Plombier")
+  statutJuridique String?
+  siret           String?
+  numeroTVA       String?
+  adresse         String?
+  telephone       String?
+  email           String?
+  iban            String?
+  mentionsComplementaires String?
+
+  updatedAt       DateTime @updatedAt
+}

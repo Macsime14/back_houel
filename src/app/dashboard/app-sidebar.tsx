@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
-import { FileText, Receipt, CalendarClock, Users } from "lucide-react";
+import { FileText, Receipt, CalendarClock, Users, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -69,6 +69,25 @@ export function AppSidebar({ userEmail }: { userEmail: string }) {
                   </SidebarMenuItem>
                 );
               })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Système</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={pathname.startsWith("/dashboard/parametres")}
+                  render={
+                    <Link href="/dashboard/parametres">
+                      <Settings />
+                      <span>Paramètres</span>
+                    </Link>
+                  }
+                />
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

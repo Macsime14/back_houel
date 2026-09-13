@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFacture } from "@/services/facture.service";
+import { composerMentionsLegales, getEntreprise } from "@/services/entreprise.service";
 import { Card, CardContent } from "@/components/ui/card";
 import { InfoField, InfoGrid } from "@/components/info-grid";
 import { LigneTotals } from "@/components/ligne-totals";
@@ -13,11 +14,13 @@ type Params = { params: Promise<{ id: string }> };
 
 export default async function FactureDetailPage({ params }: Params) {
   const { id } = await params;
-  const facture = await getFacture(id);
+  const [facture, entreprise] = await Promise.all([getFacture(id), getEntreprise()]);
 
   if (!facture) {
     notFound();
   }
+
+  const mentionsLegalesSuggeree = composerMentionsLegales(entreprise);
 
   const totalHT = facture.lignes.reduce(
     (sum, ligne) => sum + Number(ligne.quantite) * Number(ligne.prixUnitaireHT),
@@ -33,7 +36,11 @@ export default async function FactureDetailPage({ params }: Params) {
           </h1>
           <FactureStatusBadge status={facture.status} />
         </div>
-        <FactureActions factureId={facture.id} status={facture.status} />
+        <FactureActions
+          factureId={facture.id}
+          status={facture.status}
+          mentionsLegalesSuggeree={mentionsLegalesSuggeree}
+        />
       </div>
 
       <Card>

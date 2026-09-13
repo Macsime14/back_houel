@@ -10,6 +10,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   devis: "Devis",
   factures: "Factures",
   interventions: "Planning",
+  parametres: "Paramètres",
   nouveau: "Nouveau",
 };
 

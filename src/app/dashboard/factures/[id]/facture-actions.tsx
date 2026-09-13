@@ -24,12 +24,13 @@ import { deleteFactureAction, emettreFactureAction, marquerPayeeAction } from ".
 type FactureActionsProps = {
   factureId: string;
   status: FactureStatus;
+  mentionsLegalesSuggeree: string;
 };
 
-export function FactureActions({ factureId, status }: FactureActionsProps) {
+export function FactureActions({ factureId, status, mentionsLegalesSuggeree }: FactureActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [mentionsLegales, setMentionsLegales] = useState("");
+  const [mentionsLegales, setMentionsLegales] = useState(mentionsLegalesSuggeree);
 
   function handleEmettre() {
     startTransition(async () => {
