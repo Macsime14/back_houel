@@ -15,6 +15,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { logoutAction } from "./logout-action";
 
@@ -31,12 +32,18 @@ const NAV_ITEMS = [
 export function AppSidebar({ userEmail }: { userEmail: string }) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  function closeOnMobile() {
+    if (isMobile) setOpenMobile(false);
+  }
 
   return (
     <Sidebar>
       <SidebarHeader>
         <Link
           href="/dashboard"
+          onClick={closeOnMobile}
           className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-accent"
         >
           <div className="flex size-8 items-center justify-center rounded-lg bg-primary font-heading text-sm font-semibold text-primary-foreground">
@@ -63,7 +70,7 @@ export function AppSidebar({ userEmail }: { userEmail: string }) {
                     <SidebarMenuButton
                       isActive={isActive}
                       render={
-                        <Link href={item.href}>
+                        <Link href={item.href} onClick={closeOnMobile}>
                           <item.icon />
                           <span>{item.label}</span>
                         </Link>
@@ -84,7 +91,7 @@ export function AppSidebar({ userEmail }: { userEmail: string }) {
                 <SidebarMenuButton
                   isActive={pathname.startsWith("/dashboard/parametres")}
                   render={
-                    <Link href="/dashboard/parametres">
+                    <Link href="/dashboard/parametres" onClick={closeOnMobile}>
                       <Settings />
                       <span>Paramètres</span>
                     </Link>
