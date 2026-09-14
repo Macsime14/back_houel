@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Home } from "lucide-react";
 import { cn } from "cn";
 
 const SEGMENT_LABELS: Record<string, string> = {
@@ -33,19 +33,27 @@ export function Breadcrumb() {
     <nav aria-label="Fil d'Ariane" className="flex min-w-0 items-center gap-1.5 text-sm">
       {crumbs.map((crumb, index) => {
         const isLast = index === crumbs.length - 1;
+        const isFirst = index === 0;
         return (
           <span
             key={crumb.href}
             className={cn(
-              "flex min-w-0 items-center gap-1.5",
-              !isLast && "hidden shrink-0 sm:flex",
+              "flex min-w-0 shrink-0 items-center gap-1.5",
+              !isLast && !isFirst && "hidden sm:flex",
             )}
           >
-            {index > 0 && (
-              <ChevronRight className="hidden size-3.5 shrink-0 text-muted-foreground sm:block" />
-            )}
+            {index > 0 && <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" />}
             {isLast ? (
               <span className="truncate font-medium text-foreground">{crumb.label}</span>
+            ) : isFirst ? (
+              <Link
+                href={crumb.href}
+                aria-label="Retour au tableau de bord"
+                className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+              >
+                <Home className="size-4 shrink-0" />
+                <span className="hidden truncate sm:inline">{crumb.label}</span>
+              </Link>
             ) : (
               <Link
                 href={crumb.href}
