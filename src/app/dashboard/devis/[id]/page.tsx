@@ -49,7 +49,12 @@ export default async function DevisDetailPage({ params }: Params) {
           >
             <Download /> PDF
           </a>
-          <DevisActions devisId={devis.id} status={devis.status} hasFacture={hasFacture} />
+          <DevisActions
+            devisId={devis.id}
+            status={devis.status}
+            hasFacture={hasFacture}
+            clientEmail={devis.clientEmail}
+          />
         </div>
       </div>
 

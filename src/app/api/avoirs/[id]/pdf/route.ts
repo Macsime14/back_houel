@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { getAvoir } from "@/services/avoir.service";
-import { getEntreprise } from "@/services/entreprise.service";
-import { InvoiceDocument } from "@/lib/pdf/invoice-document";
+import { renderAvoirPdf } from "@/lib/pdf/render";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -27,55 +24,16 @@ type Params = { params: Promise<{ id: string }> };
  */
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
-  const [avoir, entreprise] = await Promise.all([getAvoir(id), getEntreprise()]);
+  const result = await renderAvoirPdf(id);
 
-  if (!avoir) {
+  if (!result) {
     return NextResponse.json({ error: "Avoir introuvable" }, { status: 404 });
   }
 
-  const reference = avoir.facture.numero
-    ? `Avoir sur la facture n°${avoir.facture.numero}`
-    : "Avoir sur facture brouillon";
-  const notes = avoir.motif ? `${reference} — Motif : ${avoir.motif}` : reference;
-
-  const buffer = await renderToBuffer(
-    InvoiceDocument({
-      documentTitle: "Avoir",
-      numero: avoir.numero ? String(avoir.numero) : "—",
-      dateLabel: avoir.emiseAt ? "Émis le" : "Créé le",
-      dateValue: (avoir.emiseAt ?? avoir.createdAt).toLocaleDateString("fr-FR"),
-      entreprise: {
-        nom: entreprise.nom,
-        adresse: entreprise.adresse,
-        siret: entreprise.siret,
-        numeroTVA: entreprise.numeroTVA,
-        telephone: entreprise.telephone,
-        email: entreprise.email,
-        iban: entreprise.iban,
-      },
-      client: {
-        nom: avoir.clientNom,
-        email: avoir.clientEmail,
-        adresse: avoir.clientAdresse,
-      },
-      lignes: avoir.lignes.map((ligne) => ({
-        description: ligne.description,
-        quantite: Number(ligne.quantite),
-        unite: ligne.unite,
-        prixUnitaireHT: Number(ligne.prixUnitaireHT),
-        tauxTVA: Number(ligne.tauxTVA),
-      })),
-      totalHT: Number(avoir.totalHT),
-      totalTTC: Number(avoir.totalTTC),
-      notes,
-      mentionsLegales: avoir.mentionsLegales,
-    }),
-  );
-
-  return new NextResponse(new Uint8Array(buffer), {
+  return new NextResponse(new Uint8Array(result.buffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="avoir-${avoir.numero ?? "brouillon"}.pdf"`,
+      "Content-Disposition": `inline; filename="${result.filename}"`,
     },
   });
 }

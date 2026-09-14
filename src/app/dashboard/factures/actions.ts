@@ -8,10 +8,14 @@ import {
   createFactureFromDevis,
   deleteFactureBrouillon,
   emettreFacture,
+  getFacture,
   marquerFacturePayee,
   relancerFacture,
   updateFactureBrouillon,
 } from "@/services/facture.service";
+import { getEntreprise } from "@/services/entreprise.service";
+import { renderFacturePdf } from "@/lib/pdf/render";
+import { sendFactureEmail } from "@/lib/email";
 
 type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
 
@@ -73,6 +77,43 @@ export async function emettreFactureAction(
   }
 
   revalidatePath("/dashboard/factures");
+  revalidatePath(`/dashboard/factures/${id}`);
+  return { success: true, data: null };
+}
+
+export async function envoyerFactureParEmailAction(id: string): Promise<ActionResult<null>> {
+  try {
+    const facture = await getFacture(id);
+    if (!facture) {
+      return { success: false, error: "Facture introuvable" };
+    }
+    if (!facture.numero) {
+      return { success: false, error: "Émettez d'abord la facture avant de l'envoyer" };
+    }
+    if (!facture.clientEmail) {
+      return { success: false, error: "Ce client n'a pas d'adresse email enregistrée" };
+    }
+
+    const pdf = await renderFacturePdf(id);
+    if (!pdf) {
+      return { success: false, error: "Facture introuvable" };
+    }
+
+    const entreprise = await getEntreprise();
+    await sendFactureEmail(
+      facture.clientEmail,
+      {
+        numero: facture.numero,
+        totalTTC: Number(facture.totalTTC).toFixed(2),
+        dateEcheance: facture.dateEcheance?.toLocaleDateString("fr-FR"),
+        entrepriseNom: entreprise.nom,
+      },
+      pdf,
+    );
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Erreur inattendue" };
+  }
+
   revalidatePath(`/dashboard/factures/${id}`);
   return { success: true, data: null };
 }

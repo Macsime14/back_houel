@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowRightCircle, Check, Send, Trash2, X } from "lucide-react";
+import { ArrowRightCircle, Check, Mail, Send, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -17,16 +17,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { DevisStatus } from "@/generated/prisma/client";
-import { deleteDevisAction, updateDevisAction } from "../actions";
+import { deleteDevisAction, envoyerDevisParEmailAction, updateDevisAction } from "../actions";
 import { createFactureFromDevisAction } from "../../factures/actions";
 
 type DevisActionsProps = {
   devisId: string;
   status: DevisStatus;
   hasFacture: boolean;
+  clientEmail: string | null;
 };
 
-export function DevisActions({ devisId, status, hasFacture }: DevisActionsProps) {
+export function DevisActions({ devisId, status, hasFacture, clientEmail }: DevisActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -54,6 +55,18 @@ export function DevisActions({ devisId, status, hasFacture }: DevisActionsProps)
     });
   }
 
+  function handleEnvoyerEmail() {
+    startTransition(async () => {
+      const result = await envoyerDevisParEmailAction(devisId);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Devis envoyé par email");
+      router.refresh();
+    });
+  }
+
   function handleTransformerEnFacture() {
     startTransition(async () => {
       const result = await createFactureFromDevisAction(devisId);
@@ -74,8 +87,19 @@ export function DevisActions({ devisId, status, hasFacture }: DevisActionsProps)
         </Button>
       )}
       {!hasFacture && status === "BROUILLON" && (
-        <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("ENVOYE")}>
-          <Send /> Marquer comme envoyé
+        clientEmail ? (
+          <Button size="sm" variant="outline" disabled={isPending} onClick={handleEnvoyerEmail}>
+            <Mail /> Envoyer par email
+          </Button>
+        ) : (
+          <Button size="sm" variant="outline" disabled={isPending} onClick={() => changeStatus("ENVOYE")}>
+            <Send /> Marquer comme envoyé
+          </Button>
+        )
+      )}
+      {!hasFacture && status === "ENVOYE" && clientEmail && (
+        <Button size="sm" variant="outline" disabled={isPending} onClick={handleEnvoyerEmail}>
+          <Mail /> Renvoyer par email
         </Button>
       )}
       {!hasFacture && status === "ENVOYE" && (

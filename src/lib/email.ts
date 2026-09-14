@@ -15,6 +15,46 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   });
 }
 
+export async function sendDevisEmail(
+  to: string,
+  info: { numero: number; totalTTC: string; entrepriseNom: string },
+  pdf: { buffer: Buffer; filename: string },
+) {
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
+    to,
+    subject: `Devis n°${info.numero} — ${info.entrepriseNom}`,
+    html: `
+      <p>Bonjour,</p>
+      <p>Veuillez trouver ci-joint notre devis n°${info.numero}, d'un montant de ${info.totalTTC} € TTC.</p>
+      <p>N'hésitez pas à nous contacter pour toute question.</p>
+      <p>Cordialement,<br>${info.entrepriseNom}</p>
+    `,
+    attachments: [{ filename: pdf.filename, content: pdf.buffer }],
+  });
+}
+
+export async function sendFactureEmail(
+  to: string,
+  info: { numero: number; totalTTC: string; dateEcheance?: string; entrepriseNom: string },
+  pdf: { buffer: Buffer; filename: string },
+) {
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
+    to,
+    subject: `Facture n°${info.numero} — ${info.entrepriseNom}`,
+    html: `
+      <p>Bonjour,</p>
+      <p>Veuillez trouver ci-jointe notre facture n°${info.numero}, d'un montant de ${info.totalTTC} € TTC${
+        info.dateEcheance ? ` (à régler avant le ${info.dateEcheance})` : ""
+      }.</p>
+      <p>N'hésitez pas à nous contacter pour toute question.</p>
+      <p>Cordialement,<br>${info.entrepriseNom}</p>
+    `,
+    attachments: [{ filename: pdf.filename, content: pdf.buffer }],
+  });
+}
+
 export async function sendRelanceFactureEmail(
   to: string,
   info: { numero: number; totalTTC: string; dateEcheance: string; entrepriseNom: string },

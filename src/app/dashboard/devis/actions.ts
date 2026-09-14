@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { createDevisSchema, updateDevisSchema } from "@/lib/validation";
-import { createDevis, deleteDevis, updateDevis } from "@/services/devis.service";
+import { createDevis, deleteDevis, getDevis, updateDevis } from "@/services/devis.service";
+import { getEntreprise } from "@/services/entreprise.service";
+import { renderDevisPdf } from "@/lib/pdf/render";
+import { sendDevisEmail } from "@/lib/email";
 
 type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
 
@@ -31,6 +34,40 @@ export async function updateDevisAction(id: string, input: unknown): Promise<Act
 
   try {
     await updateDevis(id, parsed.data);
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Erreur inattendue" };
+  }
+
+  revalidatePath("/dashboard/devis");
+  revalidatePath(`/dashboard/devis/${id}`);
+  return { success: true, data: null };
+}
+
+export async function envoyerDevisParEmailAction(id: string): Promise<ActionResult<null>> {
+  try {
+    const devis = await getDevis(id);
+    if (!devis) {
+      return { success: false, error: "Devis introuvable" };
+    }
+    if (!devis.clientEmail) {
+      return { success: false, error: "Ce client n'a pas d'adresse email enregistrée" };
+    }
+
+    const pdf = await renderDevisPdf(id);
+    if (!pdf) {
+      return { success: false, error: "Devis introuvable" };
+    }
+
+    const entreprise = await getEntreprise();
+    await sendDevisEmail(
+      devis.clientEmail,
+      { numero: devis.numero, totalTTC: Number(devis.totalTTC).toFixed(2), entrepriseNom: entreprise.nom },
+      pdf,
+    );
+
+    if (devis.status === "BROUILLON") {
+      await updateDevis(id, { status: "ENVOYE" });
+    }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Erreur inattendue" };
   }

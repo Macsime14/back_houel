@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Bell, CircleCheck, CreditCard, Trash2, Undo2 } from "lucide-react";
+import { Bell, CircleCheck, CreditCard, Mail, Trash2, Undo2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,7 @@ import type { FactureStatus } from "@/generated/prisma/client";
 import {
   deleteFactureAction,
   emettreFactureAction,
+  envoyerFactureParEmailAction,
   marquerPayeeAction,
   relancerFactureAction,
 } from "../actions";
@@ -70,6 +71,18 @@ export function FactureActions({
         return;
       }
       toast.success("Facture marquée comme payée");
+      router.refresh();
+    });
+  }
+
+  function handleEnvoyerEmail() {
+    startTransition(async () => {
+      const result = await envoyerFactureParEmailAction(factureId);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Facture envoyée par email");
       router.refresh();
     });
   }
@@ -174,6 +187,9 @@ export function FactureActions({
         >
           <Undo2 /> Créer un avoir
         </Link>
+        <Button size="sm" variant="outline" disabled={isPending || !clientEmail} onClick={handleEnvoyerEmail}>
+          <Mail /> Envoyer par email
+        </Button>
         {enRetard && (
           <AlertDialog>
             <AlertDialogTrigger
@@ -207,12 +223,17 @@ export function FactureActions({
 
   if (status === "PAYEE") {
     return (
-      <Link
-        href={`/dashboard/avoirs/nouveau?factureId=${factureId}`}
-        className={buttonVariants({ variant: "outline", size: "sm" })}
-      >
-        <Undo2 /> Créer un avoir
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link
+          href={`/dashboard/avoirs/nouveau?factureId=${factureId}`}
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
+          <Undo2 /> Créer un avoir
+        </Link>
+        <Button size="sm" variant="outline" disabled={isPending || !clientEmail} onClick={handleEnvoyerEmail}>
+          <Mail /> Envoyer par email
+        </Button>
+      </div>
     );
   }
 
