@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
-import { FileText, Receipt, CalendarClock, Users, Settings, Wrench, Undo2 } from "lucide-react";
+import { FileText, Receipt, CalendarClock, Users, Settings, Wrench, Undo2, BarChart3 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/avoirs", label: "Avoirs", icon: Undo2 },
   { href: "/dashboard/interventions", label: "Planning", icon: CalendarClock },
   { href: "/dashboard/prestations", label: "Prestations", icon: Wrench },
+  { href: "/dashboard/rapports", label: "Rapports", icon: BarChart3 },
 ];
 
 export function AppSidebar({ userEmail }: { userEmail: string }) {

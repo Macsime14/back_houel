@@ -12,6 +12,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   avoirs: "Avoirs",
   interventions: "Planning",
   prestations: "Prestations",
+  rapports: "Rapports",
   parametres: "Paramètres",
   nouveau: "Nouveau",
 };
